@@ -188,7 +188,7 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void getSharedVCamList() {
         pd.show();
         //************************
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "/php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getSharedVCamList");
         rp.setParam("customer", mUserToken);

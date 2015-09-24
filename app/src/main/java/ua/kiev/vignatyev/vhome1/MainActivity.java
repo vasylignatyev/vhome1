@@ -2,11 +2,14 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.DialogFragment;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 //import android.support.v7.app.ActionBarActivity;
@@ -20,6 +23,12 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.ProgressBar;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.List;
 
@@ -37,13 +46,15 @@ public class MainActivity extends FragmentActivity
      */
     public static final int DIALOG_DATE = 1;
     public static final String SERVER_URL = "http://vhome.dev.oscon.com.ua/";
-
     private static final String PREFS_NAME = "VhomeSharedPreferences";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static List<Vcam> mVcamList = null;
     private static List<Vcam> mScamList = null;
     private static String mUserToken = null;
     private static int screenWidth = 0;
     private static int screenHeight = 0;
+    public static Context context;
+    public static RequestQueue mRequestQueue;
     /**
      * VAR
      */
@@ -56,6 +67,7 @@ public class MainActivity extends FragmentActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
     private String mUserName, mUserPass;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
     /**
      * GETTERS AND SETTERS
      */
@@ -114,7 +126,7 @@ public class MainActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
         setContentView(R.layout.activity_main);
 
@@ -128,6 +140,8 @@ public class MainActivity extends FragmentActivity
             mUserPass   = savedInstanceState.getString("userPass");
         }
 
+        mRequestQueue = Volley.newRequestQueue(this);
+
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -135,18 +149,37 @@ public class MainActivity extends FragmentActivity
         screenHeight = size.y;
         Log.d("MyApp", "Screen: " + screenWidth + " X " + screenHeight);
         //GSM INIT
+        /*
         Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
         registrationIntent.putExtra("app", PendingIntent.getBroadcast(getBaseContext(),0,new Intent(),0));
         registrationIntent.putExtra("sender", "80369243567");
         startService(registrationIntent);
+        */
     }
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.d("MyApp", "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     protected void onDestroy() {
+        /*
         Intent unregistrationIntent = new Intent("com.google.android.c2dm.intent.UNREGISTER");
         unregistrationIntent.putExtra("app",PendingIntent.getBroadcast(getBaseContext(),0,new Intent(),0));
         startService(unregistrationIntent);
-
+        */
         super.onDestroy();
     }
 
@@ -286,6 +319,30 @@ public class MainActivity extends FragmentActivity
         mLoggedIn = true;
         mUserName = user_name;
         mUserPass = user_pass;
+        /* */
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    //mInformationTextView.setText(getString(R.string.gcm_send_message));
+                    Log.d("MyApp", "Token retrieved and sent to server! You can now use gcmsender to send downstream messages to this app.");
+                } else {
+                    //mInformationTextView.setText(getString(R.string.token_error_message));
+                    Log.d("MyApp","An error occurred while either fetching the InstanceID token, sending the fetched token to the server or subscribing to the PubSub topic. Please try running the sample again.");
+                }
+            }
+        };
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+        /* */
 
         SharedPreferences sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();

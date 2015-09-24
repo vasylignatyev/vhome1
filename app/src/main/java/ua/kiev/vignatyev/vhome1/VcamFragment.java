@@ -187,7 +187,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void getCustomerVCamList() {
         pd.show();
         //************************
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "/php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getCustomerVCamList");
         rp.setParam("customer", mUserToken);
