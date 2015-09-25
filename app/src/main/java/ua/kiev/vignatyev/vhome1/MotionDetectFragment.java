@@ -2,31 +2,22 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ListAdapter;
 import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import ua.kiev.vignatyev.vhome1.adapters.MotionDetectAdapter;
 import ua.kiev.vignatyev.vhome1.models.MotionDetect;
@@ -236,6 +227,7 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
                 for (MotionDetect motionDetect : mMotionDetectList) {
                     genMotionDetectPopup(motionDetect);
                 }
+
             } else {
                 Log.d("MyApp","getSharedNotificationTable parser error: " +s);
             }

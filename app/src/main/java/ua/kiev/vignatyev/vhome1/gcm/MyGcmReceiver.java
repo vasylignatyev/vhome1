@@ -1,4 +1,4 @@
-package ua.kiev.vignatyev.vhome1;
+package ua.kiev.vignatyev.vhome1.gcm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

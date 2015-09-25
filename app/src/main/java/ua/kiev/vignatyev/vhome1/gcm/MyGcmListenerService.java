@@ -1,4 +1,4 @@
-package ua.kiev.vignatyev.vhome1;
+package ua.kiev.vignatyev.vhome1.gcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +11,9 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+
+import ua.kiev.vignatyev.vhome1.MainActivity;
+import ua.kiev.vignatyev.vhome1.R;
 
 /**
  * Created by vignatyev on 24.09.2015.

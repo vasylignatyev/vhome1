@@ -224,9 +224,6 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
         protected void onPostExecute(String s) {
             mMotionDetectList = MotionDetectParser.parseFeed(s);
             if(null != mMotionDetectList) {
-                for (MotionDetect motionDetect : mMotionDetectList) {
-                     //genMotionDetectPopup(motionDetect);
-                }
                 updateDisplay();
             } else {
                 Log.d("MyApp","getSharedNotificationTable parser error: " + s);

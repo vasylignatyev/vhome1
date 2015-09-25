@@ -1,8 +1,10 @@
-package ua.kiev.vignatyev.vhome1;
+package ua.kiev.vignatyev.vhome1.gcm;
 
 import android.content.Intent;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
+
+import ua.kiev.vignatyev.vhome1.RegistrationIntentService;
 
 /**
  * Created by vignatyev on 23.09.2015.
