@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -15,18 +15,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
+import ua.kiev.vignatyev.vhome1.gcm.QuickstartPreferences;
 import ua.kiev.vignatyev.vhome1.gcm.RegistrationIntentService;
 import ua.kiev.vignatyev.vhome1.models.Credentials;
 import ua.kiev.vignatyev.vhome1.models.Varch;
@@ -135,11 +139,11 @@ public class MainActivity extends FragmentActivity
         } else {
             mUserToken  = savedInstanceState.getString("userToken");
             mUserName   = savedInstanceState.getString("userName");
-            mUserPass   = savedInstanceState.getString("userPass");
+            mUserPass   = savedInstanceState.getString("userPass", null);
         }
 
         mRequestQueue = Volley.newRequestQueue(this);
-
+/*
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -147,12 +151,18 @@ public class MainActivity extends FragmentActivity
         screenHeight = size.y;
         Log.d("MyApp", "Screen: " + screenWidth + " X " + screenHeight);
         //GSM INIT
+        */
         /*
         Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
         registrationIntent.putExtra("app", PendingIntent.getBroadcast(getBaseContext(),0,new Intent(),0));
         registrationIntent.putExtra("sender", "80369243567");
         startService(registrationIntent);
         */
+        confirmAuthentication();
+
+        Intent intent = getIntent();
+        String iMotionDetect = intent.getStringExtra("i_motion_detect");
+        Log.d("MyApp","Main i_motion_detect: " + iMotionDetect);
     }
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
@@ -374,4 +384,49 @@ public class MainActivity extends FragmentActivity
 
         return new Credentials(userName, userPass, savePassword);
     }
+    private void confirmAuthentication() {
+
+        RequestPackage rp = new RequestPackage(getString(R.string.SERVER_URL) + "/php/ajax.php");
+        rp.setMethod("GET");
+        rp.setParam("functionName", "confirmAuthentication");
+        rp.setParam("user_email", mUserName);
+        rp.setParam("user_pass", mUserPass);
+        confirmAuthenticationAsyncTask task = new confirmAuthenticationAsyncTask();
+        task.execute(rp);
+    }
+
+    /**
+     *
+     */
+    public class  confirmAuthenticationAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+        @Override
+        protected String doInBackground(RequestPackage... params) {
+            String replay = HTTPManager.getData(params[0]);
+            return replay;
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d("MyApp","confirmAuthenticationAsync replay" + ": " + s);
+
+            try {
+                JSONObject obj = new JSONObject(s);
+                Log.d("MyApp", obj.toString());
+                if (obj.has("error")) {
+                    Toast toast = Toast.makeText(MainActivity.this, "Wrong, password!!!", Toast.LENGTH_LONG);
+                    toast.show();
+                } else if (obj.has("token")) {
+                    //if(mListener != null){
+                       String userToken = obj.getString("token");
+                       loggedIn(userToken, mUserName, mUserPass, true);
+                    //}
+                }
+            } catch(JSONException e) {
+                e.printStackTrace();
+                Toast toast = Toast.makeText(MainActivity.this,"SERVER CONNECTION ERROR!!!", Toast.LENGTH_LONG);
+                toast.show();
+            }
+            //mNavigationDrawerFragment.getmDrawerListView().deferNotifyDataSetChanged();
+        }
+    }
+
 }

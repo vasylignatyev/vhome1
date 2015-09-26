@@ -33,8 +33,13 @@ public class MyGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
+        String motionDate = data.getString("motion_date",null);
+
         Log.d("MyApp", "From: " + from);
         Log.d("MyApp", "Message: " + message);
+        if(null != motionDate)
+            Log.d("MyApp", "motionDate: " + motionDate);
+
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -54,7 +59,7 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        sendNotification(message, data);
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -64,16 +69,19 @@ public class MyGcmListenerService extends GcmListenerService {
      *
      * @param message GCM message received.
      */
-    private void sendNotification(String message) {
+    private void sendNotification(String message, Bundle data) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        intent.putExtras(data);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("GCM Message")
+                .setContentTitle("Motion Detect")
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)

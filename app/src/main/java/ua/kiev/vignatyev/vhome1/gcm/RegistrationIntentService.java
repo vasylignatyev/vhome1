@@ -16,7 +16,6 @@ import java.io.IOException;
 
 import ua.kiev.vignatyev.vhome1.HTTPManager;
 import ua.kiev.vignatyev.vhome1.MainActivity;
-import ua.kiev.vignatyev.vhome1.QuickstartPreferences;
 import ua.kiev.vignatyev.vhome1.R;
 import ua.kiev.vignatyev.vhome1.RequestPackage;
 
@@ -42,7 +41,6 @@ public class RegistrationIntentService extends IntentService {
             // are local.
             // [START get_token]
             InstanceID instanceID = InstanceID.getInstance(this);
-            //String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
             String token = instanceID.getToken(getString(R.string.senderID),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
