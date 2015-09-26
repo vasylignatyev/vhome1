@@ -1,33 +1,24 @@
-package ua.kiev.vignatyev.vhome1;
+package ua.kiev.vignatyev.vhome1.gcm;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
+import ua.kiev.vignatyev.vhome1.HTTPManager;
+import ua.kiev.vignatyev.vhome1.MainActivity;
+import ua.kiev.vignatyev.vhome1.QuickstartPreferences;
+import ua.kiev.vignatyev.vhome1.R;
+import ua.kiev.vignatyev.vhome1.RequestPackage;
 
 /**
  * Created by vignatyev on 23.09.2015.

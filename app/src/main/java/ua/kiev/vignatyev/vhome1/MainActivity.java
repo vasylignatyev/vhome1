@@ -1,29 +1,24 @@
 package ua.kiev.vignatyev.vhome1;
 
 import android.app.DialogFragment;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Point;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.DrawerLayout;
-//import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.ProgressBar;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -32,9 +27,12 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.List;
 
+import ua.kiev.vignatyev.vhome1.gcm.RegistrationIntentService;
 import ua.kiev.vignatyev.vhome1.models.Credentials;
 import ua.kiev.vignatyev.vhome1.models.Varch;
 import ua.kiev.vignatyev.vhome1.models.Vcam;
+
+//import android.support.v7.app.ActionBarActivity;
 
 
 public class MainActivity extends FragmentActivity
@@ -206,23 +204,23 @@ public class MainActivity extends FragmentActivity
         String fragmentId = null;
 
         if(mLoggedIn == false) {
-            newFragment = (Fragment) new LoginFragment();
+            newFragment = new LoginFragment();
         } else {
             switch (position) {
                 case 0:
-                    newFragment = (Fragment) VcamFragment.newInstance(mUserToken);
+                    newFragment = VcamFragment.newInstance(mUserToken);
                     break;
                 case 1:
-                    newFragment = (Fragment) ScamFragment.newInstance(mUserToken);
+                    newFragment = ScamFragment.newInstance(mUserToken);
                     break;
                 case 2:
-                    newFragment = (Fragment) MotionDetectFragment.newInstance(mUserToken);
+                    newFragment = MotionDetectFragment.newInstance(mUserToken);
                     break;
                 case 3:
-                    newFragment = (Fragment) SharedMotionDetectFragment.newInstance(mUserToken);
+                    newFragment = SharedMotionDetectFragment.newInstance(mUserToken);
                     break;
                 default:
-                    newFragment = (Fragment) new LoginFragment();
+                    newFragment = new LoginFragment();
                     break;
             }
         }
@@ -363,7 +361,7 @@ public class MainActivity extends FragmentActivity
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment newFragment;
-        newFragment = (Fragment) VcamFragment.newInstance(mUserToken);
+        newFragment = VcamFragment.newInstance(mUserToken);
         fragmentManager.beginTransaction().replace(R.id.container, newFragment).commit();
     }
 
