@@ -44,7 +44,7 @@ public class MotionDetectAdapter extends ArrayAdapter<MotionDetect> {
         this.mMotionDetectList = objects;
 
         final int maxMemory = (int)(Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = (int)(maxMemory / 8);
+        final int cacheSize = maxMemory / 8;
         Log.d("MyApp", "MEM -> " + cacheSize);
         imageCache = new LruCache<>(cacheSize);
         queue = Volley.newRequestQueue(context);
@@ -62,8 +62,8 @@ public class MotionDetectAdapter extends ArrayAdapter<MotionDetect> {
         TextView tvNotificationDate = (TextView) view.findViewById(R.id.tvNotificationDate);
         TextView tvNotificationCamName = (TextView) view.findViewById(R.id.tvNotificationCamName);
 
-        tvNotificationDate.setText((CharSequence) motionDetect.date);
-        tvNotificationCamName.setText((CharSequence) motionDetect.camName);
+        tvNotificationDate.setText(motionDetect.date);
+        tvNotificationCamName.setText(motionDetect.camName);
 
         view.setTag(motionDetect.iMotionDetect);
 
@@ -82,7 +82,7 @@ public class MotionDetectAdapter extends ArrayAdapter<MotionDetect> {
     private void setViewPagerAdapter(ViewPager v, MotionDetect motionDetect){
         //ImageAdapter adapter = new ImageAdapter(context, motionDetect.images, ,imageCache, queue);
         //v.setAdapter(adapter);
-    };
+    }
 
     private class MotionDetectAndViev{
         public MotionDetect motionDetect;

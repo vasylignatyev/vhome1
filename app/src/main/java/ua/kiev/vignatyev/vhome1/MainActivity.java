@@ -48,7 +48,7 @@ public class MainActivity extends FragmentActivity
      */
     public static final int DIALOG_DATE = 1;
     public static final String SERVER_URL = "http://vhome.dev.oscon.com.ua/";
-    private static final String PREFS_NAME = "VhomeSharedPreferences";
+    public static final String PREFS_NAME = "VhomeSharedPreferences";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static List<Vcam> mVcamList = null;
     private static List<Vcam> mScamList = null;
@@ -60,10 +60,6 @@ public class MainActivity extends FragmentActivity
     /**
      * VAR
      */
-    private int myYear = 2011;
-    private int myMonth = 02;
-    private int myDay = 03;
-    private int oldOptions;
     private boolean mLoggedIn = false;
     private SharedPreferences sp;
     private NavigationDrawerFragment mNavigationDrawerFragment;
@@ -384,6 +380,10 @@ public class MainActivity extends FragmentActivity
 
         return new Credentials(userName, userPass, savePassword);
     }
+
+    /**
+     *
+     */
     private void confirmAuthentication() {
 
         RequestPackage rp = new RequestPackage(getString(R.string.SERVER_URL) + "/php/ajax.php");

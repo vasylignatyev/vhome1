@@ -1,6 +1,5 @@
 package ua.kiev.vignatyev.vhome1.parsers;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -26,7 +25,6 @@ public class MotionDetectParser {
                 for (int i = 0; i < dataArray.length(); i++) {
                     JSONArray dataElement = dataArray.getJSONArray(i);
                     MotionDetect motionDetect = new MotionDetect( dataElement.getInt(0) );
-                    //motionDetect.iMotionDetect = dataElement.getInt(0);
                     motionDetect.date = dataElement.getString(1);
                     motionDetect.camName = dataElement.getString(2);
                     dataList.add(motionDetect);

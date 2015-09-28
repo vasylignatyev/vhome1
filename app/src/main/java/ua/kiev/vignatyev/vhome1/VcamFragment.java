@@ -15,7 +15,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-
 import ua.kiev.vignatyev.vhome1.adapters.VcamAdapter;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
 
@@ -106,7 +105,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(mMainActivity.isVcamListEmpty()) {
+        if(MainActivity.isVcamListEmpty()) {
             getCustomerVCamList();
         } else  {
             updateDisplay();
@@ -117,7 +116,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      *
      */
     public void updateDisplay(){
-        vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, mMainActivity.getVcamList());
+        vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
         //**********************
         // Set the listener
         vcamAdapter.setOnAdapterInteractionListener(this);
@@ -140,7 +139,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //set arguments
-        Fragment newFragment = (Fragment) VcamPlayerFragment.newInstance(new Integer(view.getTag().toString()) );
+        Fragment newFragment = VcamPlayerFragment.newInstance(new Integer(view.getTag().toString()) );
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.replace(R.id.container, newFragment, VcamPlayerFragment.TAG);
@@ -185,7 +184,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      * REST Request for Vcam List
      */
     public void getCustomerVCamList() {
-        pd.show();
+ //       pd.show();
         //************************
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
@@ -206,7 +205,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         }
         @Override
         protected void onPostExecute(String s) {
-            mMainActivity.setVcamList(VcamParser.parseFeed(s));
+            MainActivity.setVcamList(VcamParser.parseFeed(s));
             updateDisplay();
         }
     }

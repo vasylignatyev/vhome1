@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-import ua.kiev.vignatyev.vhome1.MainActivity;
+import ua.kiev.vignatyev.vhome1.MotionDetectActivity;
 import ua.kiev.vignatyev.vhome1.R;
 
 /**
@@ -70,7 +70,7 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param message GCM message received.
      */
     private void sendNotification(String message, Bundle data) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MotionDetectActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         intent.putExtras(data);
