@@ -8,32 +8,35 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import ua.kiev.vignatyev.vhome1.models.MotionDetect;
+import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 
-/**
- * Created by vignatyev on 02.09.2015.
- */
 public class MotionDetectParserNew {
-    public static ArrayList<MotionDetect> parseFeed(String JSONString) {
-        ArrayList<MotionDetect> motionList = null;
+    public static ArrayList<MotionDetectNew> parseFeed(JSONArray motionArray) {
+        final ArrayList<MotionDetectNew> motionList = new ArrayList<>();
         try {
-            motionList = new ArrayList<>();
-            JSONArray motionArray = obj.getJSONArray("data");
             Log.d("MyApp", "Parsed MotionDetect: " + motionArray.length());
             for (int i = 0; i < motionArray.length(); i++) {
+                JSONObject mdElement = motionArray.getJSONObject(i);
 
+                MotionDetectNew motionDetect = new MotionDetectNew();
 
-                JSONArray dataElement = motionArray.getJSONArray(i);
-                MotionDetect motionDetect = new MotionDetect( dataElement.getInt(0) );
-                motionDetect.date = dataElement.getString(1);
-                motionDetect.camName = dataElement.getString(2);
+                if(mdElement.has("i_motion_detect"))
+                    motionDetect.iMotionDetect = mdElement.getInt("i_motion_detect");
+                if(mdElement.has("issue_date"))
+                    motionDetect.date = mdElement.getString("issue_date");
+                if(mdElement.has("images")) {
+                    JSONArray imagesArray = mdElement.getJSONArray("images");
+                    motionDetect.images = new ArrayList<>();
+
+                    for( int j=0; j < imagesArray.length(); j++ )
+                        motionDetect.images.add((String) imagesArray.get(j));
+                }
                 motionList.add(motionDetect);
             }
         } catch (JSONException ex) {
-            ex.printStackTrace();
-            return null;
-        } finally {
-            return motionList;
+             ex.printStackTrace();
+             return null;
         }
+        return motionList;
     }
 }

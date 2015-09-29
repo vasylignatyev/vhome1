@@ -1,6 +1,7 @@
 package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -8,23 +9,43 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
+import ua.kiev.vignatyev.vhome1.adapters.MotionDetectAdapterNew;
+import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
+import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
+
 public class MotionDetectActivity extends Activity {
     /* VARS */
     private String mUserName, mUserPass, mUserToken, mICustomerVcam;
-    //private int ;
+    private String mCamName, mCamToken, mCamLocation;
+    private int mMDAmount;
+    private ProgressDialog pd;
+
     private SharedPreferences sp;
+    private ArrayList<MotionDetectNew> mMotionList;
+
+    private TextView tvCamName, tvCamLocation, tvMDAmount;
+    private ListView mListView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_motion_detect);
+
+        pd = new ProgressDialog(this);
+        pd.setTitle("Подключение к серверу");
+        pd.setMessage("Ожидайте");
+
 
         sp = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
         if (savedInstanceState == null) {
@@ -36,6 +57,7 @@ public class MotionDetectActivity extends Activity {
         }
         if ((null != mUserName) && (null != mUserPass)) {
             confirmAuthentication();
+            pd.show();
         }
 
 
@@ -43,6 +65,10 @@ public class MotionDetectActivity extends Activity {
         String iMotionDetect = intent.getStringExtra("i_motion_detect");
         mICustomerVcam = intent.getStringExtra("i_customer_vcam");
         Log.d("MyApp", "MotionDetectActivity i_motion_detect: " + iMotionDetect);
+
+        tvCamName = (TextView)findViewById(R.id.tvCamName);
+        tvMDAmount = (TextView)findViewById(R.id.tvMDAmount);
+        mListView = (ListView)findViewById(R.id.lvMotionDetect);
 
 
     }
@@ -105,10 +131,22 @@ public class MotionDetectActivity extends Activity {
             }
         }
     }
+
+    private void updateDisplay() {
+        Log.d("MyApp", "updateDisplay");
+        MotionDetectAdapterNew motionDetectAdapter = new MotionDetectAdapterNew(this, R.layout.item_motion_detect, mMotionList);
+        //**********************
+        // Set the adapter
+        mListView.setAdapter(motionDetectAdapter);
+
+
+
+    }
     /**
      *
      */
     private void getMotionDetectList(int iCustomerVcam) {
+
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getMotionDetectList");
@@ -126,13 +164,37 @@ public class MotionDetectActivity extends Activity {
         @Override
         protected void onPostExecute(String s) {
             Log.d("MyApp", "GetMotionDetectListAsyncTask replay" + ": " + s.length());
+            JSONObject mdObject = null;
             try {
-                JSONArray obj = new JSONArray(s);
-                Log.d("MyApp", "Motion #" + obj.length());
+                mdObject = new JSONObject(s);
+
+                if(mdObject.has("cam_name")) {
+                    mCamName = mdObject.getString("cam_name");
+                    tvCamName.setText(mCamName);
+                }
+                if(mdObject.has("cam_token")) {
+                    mCamToken = mdObject.getString("cam_token");
+                }
+                if(mdObject.has("cam_Location")) {
+                    mCamLocation = mdObject.getString("cam_Location");
+
+                }
+                if(mdObject.has("amount")) {
+                    mMDAmount = mdObject.getInt("amount");
+                    tvMDAmount.setText( Integer.toString(mMDAmount) );
+                }
+                if(mdObject.has("md_list")) {
+                    JSONArray mdArray = mdObject.getJSONArray("md_list");
+                    mMotionList = MotionDetectParserNew.parseFeed(mdArray);
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.d("MyApp", "Json error");
+            } finally {
+                pd.hide();
+                updateDisplay();
             }
-        }
+
+         }
     }
 }

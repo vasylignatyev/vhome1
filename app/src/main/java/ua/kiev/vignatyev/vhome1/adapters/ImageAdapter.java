@@ -1,12 +1,10 @@
 package ua.kiev.vignatyev.vhome1.adapters;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
@@ -24,7 +22,6 @@ import java.net.URL;
 import java.util.List;
 
 import ua.kiev.vignatyev.vhome1.MainActivity;
-import ua.kiev.vignatyev.vhome1.SharedMotionDetectFragment;
 
 /**
  * Created by vignatyev on 10.09.2015.
@@ -43,10 +40,9 @@ public class ImageAdapter extends PagerAdapter {
     public ImageAdapter(Context context, List<String> images, int position, LruCache<String,
             Bitmap> imageCache, RequestQueue queue) {
         mContext = context;
-        //mImages = images;
-        mImages = SharedMotionDetectFragment.getMotionDetect(position).images;
+        mImages = images;
 
-                this.imageCache = imageCache;
+        this.imageCache = imageCache;
         this.queue = queue;
     }
 
@@ -58,7 +54,7 @@ public class ImageAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == ((ImageView) object);
+        return view == object;
     }
 
     @Override
@@ -81,7 +77,7 @@ public class ImageAdapter extends PagerAdapter {
                 Log.d("MyApp", "Tag = " + view.getTag());
             }
         });
-        ((ViewPager) container).addView(imageView, 0);
+        container.addView(imageView, 0);
 
         if( null != mImages) {
             final String uri = mImages.get(position);
@@ -123,7 +119,7 @@ public class ImageAdapter extends PagerAdapter {
     }
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((ImageView) object);
+        container.removeView((ImageView) object);
     }
 
     /**

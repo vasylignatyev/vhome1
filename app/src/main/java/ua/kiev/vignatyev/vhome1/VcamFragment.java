@@ -117,12 +117,10 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     public void updateDisplay(){
         vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
-        //**********************
-        // Set the listener
-        vcamAdapter.setOnAdapterInteractionListener(this);
-        //**********************
-        // Set the adapter
         if(null != vcamAdapter) {
+            // Set the listener
+            vcamAdapter.setOnAdapterInteractionListener(this);
+            // Set the adapter
             mListView.setAdapter(vcamAdapter);
         }
         pd.hide();
@@ -184,7 +182,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      * REST Request for Vcam List
      */
     public void getCustomerVCamList() {
- //       pd.show();
+        pd.show();
         //************************
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
