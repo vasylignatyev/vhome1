@@ -24,6 +24,8 @@ public class MotionDetectParserNew {
                     motionDetect.iMotionDetect = mdElement.getInt("i_motion_detect");
                 if(mdElement.has("issue_date"))
                     motionDetect.date = mdElement.getString("issue_date");
+                if(mdElement.has("cam_name"))
+                    motionDetect.cam_name = mdElement.getString("cam_name");
                 if(mdElement.has("images")) {
                     JSONArray imagesArray = mdElement.getJSONArray("images");
                     motionDetect.images = new ArrayList<>();
@@ -35,6 +37,7 @@ public class MotionDetectParserNew {
             }
         } catch (JSONException ex) {
              ex.printStackTrace();
+            Log.d("MyApp", "Parser Error");
              return null;
         }
         return motionList;

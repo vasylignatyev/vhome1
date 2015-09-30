@@ -56,9 +56,10 @@ public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
         final MotionDetectNew motionDetect = mMotionDetectList.get(position);
 
         TextView tvNotificationDate = (TextView) view.findViewById(R.id.tvNotificationDate);
-        //TextView tvNotificationCamName = (TextView) view.findViewById(R.id.tvNotificationCamName);
+        TextView tvNotificationCamName = (TextView) view.findViewById(R.id.tvNotificationCamName);
 
         tvNotificationDate.setText(motionDetect.date);
+        tvNotificationCamName.setText(motionDetect.cam_name);
 
         view.setTag(motionDetect.iMotionDetect);
 

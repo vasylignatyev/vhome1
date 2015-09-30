@@ -294,7 +294,8 @@ public class MainActivity extends FragmentActivity
             alert.show();
             */
 
-            showDialog();
+            //showDialog();
+            super.onBackPressed();
         } else {
             super.onBackPressed();
         }

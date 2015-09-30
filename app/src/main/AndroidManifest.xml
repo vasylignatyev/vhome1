@@ -35,7 +35,7 @@
         <activity
             android:name=".MotionDetectActivity"
             android:label="@string/title_activity_motion_detect" >
-        </activity>
+         </activity>
         <!-- [START gcm_receiver] -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

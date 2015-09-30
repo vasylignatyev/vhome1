@@ -25,7 +25,8 @@ import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 
 public class MotionDetectActivity extends Activity {
     /* VARS */
-    private String mUserName, mUserPass, mUserToken, mICustomerVcam;
+    private String mUserName, mUserPass, mUserToken;
+    private int mIMotionDetect, mICustomerVcam;
     private String mCamName, mCamToken, mCamLocation;
     private int mMDAmount;
     private ProgressDialog pd;
@@ -60,11 +61,9 @@ public class MotionDetectActivity extends Activity {
             pd.show();
         }
 
-
         Intent intent = getIntent();
-        String iMotionDetect = intent.getStringExtra("i_motion_detect");
-        mICustomerVcam = intent.getStringExtra("i_customer_vcam");
-        Log.d("MyApp", "MotionDetectActivity i_motion_detect: " + iMotionDetect);
+        mIMotionDetect = Integer.valueOf(intent.getStringExtra("i_motion_detect"));
+        mICustomerVcam = Integer.valueOf(intent.getStringExtra("i_customer_vcam"));
 
         tvCamName = (TextView)findViewById(R.id.tvCamName);
         tvMDAmount = (TextView)findViewById(R.id.tvMDAmount);
@@ -106,6 +105,21 @@ public class MotionDetectActivity extends Activity {
         confirmAuthenticationAsyncTask task = new confirmAuthenticationAsyncTask();
         task.execute(rp);
     }
+
+    /**
+     *
+     */
+    private void updateDisplay() {
+        Log.d("MyApp", "updateDisplay");
+        MotionDetectAdapterNew motionDetectAdapter = new MotionDetectAdapterNew(this, R.layout.item_motion_detect, mMotionList);
+        //**********************
+        // Set the adapter
+        mListView.setAdapter(motionDetectAdapter);
+    }
+
+    /**
+     *
+     */
     public class confirmAuthenticationAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
@@ -122,7 +136,11 @@ public class MotionDetectActivity extends Activity {
                     toast.show();
                 } else if (obj.has("token")) {
                     mUserToken = obj.getString("token");
-                    getMotionDetectList(Integer.parseInt(mICustomerVcam));
+                    if( 0 != mICustomerVcam) {
+                        getMotionDetectList(mICustomerVcam);
+                    } else {
+                        pd.hide();
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -132,17 +150,7 @@ public class MotionDetectActivity extends Activity {
         }
     }
 
-    private void updateDisplay() {
-        Log.d("MyApp", "updateDisplay");
-        MotionDetectAdapterNew motionDetectAdapter = new MotionDetectAdapterNew(this, R.layout.item_motion_detect, mMotionList);
-        //**********************
-        // Set the adapter
-        mListView.setAdapter(motionDetectAdapter);
-
-
-
-    }
-    /**
+     /**
      *
      */
     private void getMotionDetectList(int iCustomerVcam) {
@@ -152,10 +160,11 @@ public class MotionDetectActivity extends Activity {
         rp.setParam("functionName", "getMotionDetectList");
         rp.setParam("user_token", mUserToken);
         rp.setParam("i_customer_vcam", Integer.toString(iCustomerVcam));
+        pd.show();
         GetMotionDetectListAsyncTask task = new GetMotionDetectListAsyncTask();
         task.execute(rp);
     }
-    public class GetMotionDetectListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+    private class GetMotionDetectListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
             String replay = HTTPManager.getData(params[0]);
@@ -194,7 +203,6 @@ public class MotionDetectActivity extends Activity {
                 pd.hide();
                 updateDisplay();
             }
-
          }
     }
 }

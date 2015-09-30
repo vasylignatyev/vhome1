@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="01/01/1970"
+                android:text="Не указана"
                 android:id="@+id/tvNotificationDate"
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="01/01/1970"
+                android:text="Не известно"
                 android:id="@+id/tvNotificationCamName"
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>

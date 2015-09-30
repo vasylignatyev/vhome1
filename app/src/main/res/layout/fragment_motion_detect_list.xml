@@ -10,12 +10,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Current Date"
-            android:id="@+id/btDate" />
-
         <ListView android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
@@ -26,7 +20,5 @@
             android:visibility="gone"
             android:text="@string/no_records"
             android:gravity="center"/>
-
     </LinearLayout>
-
 </FrameLayout>

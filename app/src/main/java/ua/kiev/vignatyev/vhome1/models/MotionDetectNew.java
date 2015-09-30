@@ -8,5 +8,6 @@ import java.util.ArrayList;
 public class MotionDetectNew {
     public int iMotionDetect;
     public String date;
+    public String cam_name;
     public ArrayList<String> images;
 }
