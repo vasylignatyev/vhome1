@@ -130,7 +130,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.btnLogin :
-                RequestPackage rp = new RequestPackage(getString(R.string.SERVER_URL) + "/ajax/createToken.php");
+                RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "/ajax/createToken.php");
                 rp.setMethod("GET");
                 mUserName = etEmail.getText().toString();
                 mUserPass = etPassword.getText().toString();

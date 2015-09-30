@@ -130,31 +130,18 @@ public class MainActivity extends FragmentActivity
 
         sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         if(savedInstanceState == null) {
-            mUserName = sp.getString("userName", "");
-            mUserPass = sp.getString("userPass", "");
+            mUserName = sp.getString("userName", null);
+            mUserPass = sp.getString("userPass", null);
         } else {
-            mUserToken  = savedInstanceState.getString("userToken");
-            mUserName   = savedInstanceState.getString("userName");
+            mUserToken  = savedInstanceState.getString("userToken", null);
+            mUserName   = savedInstanceState.getString("userName", null);
             mUserPass   = savedInstanceState.getString("userPass", null);
         }
 
         mRequestQueue = Volley.newRequestQueue(this);
-/*
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        screenWidth = size.x;
-        screenHeight = size.y;
-        Log.d("MyApp", "Screen: " + screenWidth + " X " + screenHeight);
-        //GSM INIT
-        */
-        /*
-        Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
-        registrationIntent.putExtra("app", PendingIntent.getBroadcast(getBaseContext(),0,new Intent(),0));
-        registrationIntent.putExtra("sender", "80369243567");
-        startService(registrationIntent);
-        */
-        confirmAuthentication();
+
+        if( mUserToken != null && mUserPass != null)
+            confirmAuthentication();
 
         Intent intent = getIntent();
         String iMotionDetect = intent.getStringExtra("i_motion_detect");
