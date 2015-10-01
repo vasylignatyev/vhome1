@@ -15,7 +15,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-
 import ua.kiev.vignatyev.vhome1.adapters.VcamAdapter;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
 
@@ -92,7 +91,7 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_scam_list, container, false);
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        mListView.setEmptyView(view.findViewById(android.R.id.empty));;
+        mListView.setEmptyView(view.findViewById(android.R.id.empty));
         mListView.setOnItemClickListener(this);
 
         return view;
@@ -106,7 +105,7 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(mMainActivity.isScamListEmpty()) {
+        if(MainActivity.isScamListEmpty()) {
             getSharedVCamList();
         } else {
             updateDisplay();
@@ -117,7 +116,7 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
      *
      */
     public void updateDisplay(){
-        vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, mMainActivity.getScamList());
+        vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, MainActivity.getScamList());
         //**********************
         // Set the listener
         vcamAdapter.setOnAdapterInteractionListener(this);
@@ -140,7 +139,10 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //set arguments
-        Fragment newFragment = (Fragment) VcamPlayerFragment.newInstance(new Integer(view.getTag().toString()) );
+        Log.d("MyApp","VIEW Tag: " +  view.getTag().toString());
+        String steamURL = MainActivity.getScam(Integer.parseInt(view.getTag().toString())).getVcamURL();
+        Log.d("MyApp", steamURL);
+        Fragment newFragment = VcamPlayerFragment.newInstance(steamURL);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.replace(R.id.container, newFragment, VcamPlayerFragment.TAG);
@@ -167,8 +169,6 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     @Override
     public void onArchButtonClick(View v) {
-        Log.d("MyApp", TAG + " onArchButtonClick");
-
         Log.d("myApp", "Archive vcam token: " + v.getTag());
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -206,7 +206,7 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
         }
         @Override
         protected void onPostExecute(String s) {
-            mMainActivity.setScamList(VcamParser.parseFeed(s));
+            MainActivity.setScamList(VcamParser.parseFeed(s));
             updateDisplay();
         }
     }

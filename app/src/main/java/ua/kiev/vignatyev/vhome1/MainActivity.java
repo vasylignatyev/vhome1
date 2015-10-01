@@ -139,26 +139,7 @@ public class MainActivity extends FragmentActivity
         }
 
         mRequestQueue = Volley.newRequestQueue(this);
-/*
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        screenWidth = size.x;
-        screenHeight = size.y;
-        Log.d("MyApp", "Screen: " + screenWidth + " X " + screenHeight);
-        //GSM INIT
-        */
-        /*
-        Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
-        registrationIntent.putExtra("app", PendingIntent.getBroadcast(getBaseContext(),0,new Intent(),0));
-        registrationIntent.putExtra("sender", "80369243567");
-        startService(registrationIntent);
-        */
         confirmAuthentication();
-
-        Intent intent = getIntent();
-        String iMotionDetect = intent.getStringExtra("i_motion_detect");
-        Log.d("MyApp","Main i_motion_detect: " + iMotionDetect);
     }
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
@@ -206,7 +187,7 @@ public class MainActivity extends FragmentActivity
         for(int i = 0; i < count; ++i) {
             fragmentManager.popBackStackImmediate();
         }
-        Fragment newFragment;
+        Fragment newFragment = null;
         String fragmentId = null;
 
         if(mLoggedIn == false) {
@@ -225,16 +206,28 @@ public class MainActivity extends FragmentActivity
                 case 3:
                     newFragment = SharedMotionDetectFragment.newInstance(mUserToken);
                     break;
+                case 4:
+                    logout();
+                    break;
                 default:
                     newFragment = new LoginFragment();
                     break;
             }
         }
-        fragmentManager.beginTransaction().replace(R.id.container, newFragment).commit();
+        if(null != newFragment)
+            fragmentManager.beginTransaction().replace(R.id.container, newFragment).commit();
     }
 
-    public void onSectionAttached(int number) {
+    public void logout() {
+        mVcamList = null;
+        mScamList = null;
+        sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.remove("userPass");
+        editor.apply();
+        finish();
     }
+
 
     public void restoreActionBar() {
         //ActionBar actionBar = getSupportActionBar();
@@ -375,8 +368,8 @@ public class MainActivity extends FragmentActivity
     @Override
     public Credentials getCredentials() {
         SharedPreferences sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String userName = sp.getString("userName", "vignatyev@list.ru");
-        String userPass = sp.getString("userPass", "123456");
+        String userName = sp.getString("userName", null);
+        String userPass = sp.getString("userPass", null);
         Boolean savePassword = sp.getBoolean("savePassword", true);
 
         return new Credentials(userName, userPass, savePassword);

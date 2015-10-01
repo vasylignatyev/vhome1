@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +49,7 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mMainActivity = (MainActivity) activity;
-        pd = new ProgressDialog(activity);
+        pd = new ProgressDialog(getActivity());
         pd.setTitle("Подключение к серверу");
         pd.setMessage("Ожидайте");
     }
@@ -108,13 +107,6 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
         Log.d("MyApp", "Click Motion Detact Item: " + view.getTag().toString());
     }
 
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = mListView.getEmptyView();
-
-        if (emptyView instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
-        }
-    }
     public void updateDisplay(){
         Log.d("MyApp", "updateDisplay");
         motionDetectAdapter = new MotionDetectAdapterNew(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
@@ -129,7 +121,7 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
      * REST Request for getMotionDetectListByCustomer
      */
     private void getMotionDetectListByCustomer() {
-
+        pd.show();
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getMotionDetectListByCustomer");

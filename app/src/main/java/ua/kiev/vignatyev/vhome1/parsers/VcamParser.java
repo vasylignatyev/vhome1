@@ -116,8 +116,8 @@ public class VcamParser {
                     }
                     /* ADD */
                     vcamList.add(vcam);
-                                    }
-                                                    Log.d("MyApp", "VcamList length: " + vcamArray.length());
+                }
+                Log.d("MyApp", "VcamList length: " + vcamArray.length());
                 return vcamList;
             } catch (JSONException ex) {
                 ex.printStackTrace();

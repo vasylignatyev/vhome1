@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,13 +44,13 @@ public class VcamPlayerFragment extends Fragment {
 
     Timer myTimer;
 
-    private static final String VCAM_POSITION = "vcamPosition";
+    private static final String VCAM_URL = "vcamUrl";
 
-    public static VcamPlayerFragment newInstance(int vcamPosition) {
+    public static VcamPlayerFragment newInstance(String vcamUrl) {
 
         VcamPlayerFragment fragment = new VcamPlayerFragment();
         Bundle args = new Bundle();
-        args.putInt(VCAM_POSITION, vcamPosition);
+        args.putString(VCAM_URL, vcamUrl);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,11 +87,10 @@ public class VcamPlayerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mVcamPosition = getArguments().getInt(VCAM_POSITION);
-            //mStreamURL = mVcamPosition + "/index.m3u8";
+            mStreamURL = getArguments().getString(VCAM_URL);
             mVcam = MainActivity.getVcam(mVcamPosition);
 
-            mStreamURL = "http://" + mVcam.URL + ":" + mVcam.HLS + "/myapp/"+ mVcam.TOKEN + "/index.m3u8";
+            //mStreamURL = "http://" + mVcam.URL + ":" + mVcam.HLS + "/myapp/"+ mVcam.TOKEN + "/index.m3u8";
         }
     }
 

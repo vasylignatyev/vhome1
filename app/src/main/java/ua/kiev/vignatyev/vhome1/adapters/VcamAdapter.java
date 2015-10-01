@@ -60,7 +60,6 @@ public class VcamAdapter extends ArrayAdapter<Vcam> {
         tvVcamLocation.setText(vcam.VCAM_LOCATION);
         Button vacmArchiveButton = (Button) view.findViewById(R.id.vacmArchiveButton);
 
-        //vacmArchiveButton.setOnClickListener(null);
         vacmArchiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,10 +81,6 @@ public class VcamAdapter extends ArrayAdapter<Vcam> {
             ThumbLoader loader = new ThumbLoader();
             loader.execute(container);
             }
-
-        //view.setTag(vcam.TOKEN);
-        //view.setTag("http://" + vcam.URL + ":" + vcam.HLS + "/myapp/" + mVcamToken + "/index.m3u8");
-        //vacmArchiveButton.setTag(vcam.TOKEN);
 
         view.setTag(position);
         vacmArchiveButton.setTag(vcam.TOKEN);
