@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import ua.kiev.vignatyev.vhome1.adapters.VcamAdapter;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
@@ -31,7 +31,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     private MainActivity mMainActivity;
     private ProgressDialog pd;
     private String mUserToken;
-    private AbsListView mListView;
+    private ListView mListView;
 
     /**
      *
@@ -90,7 +90,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_vcam_list, container, false);
-        mListView = (AbsListView) view.findViewById(android.R.id.list);
+        mListView = (ListView) view.findViewById(android.R.id.list);
         mListView.setEmptyView(view.findViewById(android.R.id.empty));
         mListView.setOnItemClickListener(this);
 
@@ -118,10 +118,10 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void updateDisplay(){
         vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
         if(null != vcamAdapter) {
-            // Set the listener
             vcamAdapter.setOnAdapterInteractionListener(this);
-            // Set the adapter
-            mListView.setAdapter(vcamAdapter);
+            if(null != mListView ) {
+                mListView.setAdapter(vcamAdapter);
+            }
         }
         pd.hide();
     }
@@ -137,7 +137,10 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //set arguments
-        Fragment newFragment = VcamPlayerFragment.newInstance(new Integer(view.getTag().toString()) );
+        Log.d("MyApp","VIEW Tag: " + view.getTag().toString());
+        String steamURL = MainActivity.getVcam(Integer.parseInt(view.getTag().toString())).getVcamURL();
+        Log.d("MyApp", steamURL);
+        Fragment newFragment = VcamPlayerFragment.newInstance(steamURL);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.replace(R.id.container, newFragment, VcamPlayerFragment.TAG);
@@ -148,24 +151,10 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
 
     /**
      *
-     * @param emptyText
-     */
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = mListView.getEmptyView();
-
-        if (emptyView instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
-        }
-    }
-
-    /**
-     *
      * @param v
      */
     @Override
     public void onArchButtonClick(View v) {
-        Log.d("MyApp", TAG + " onArchButtonClick");
-
         Log.d("myApp", "Archive vcam token: " + v.getTag());
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -182,6 +171,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      * REST Request for Vcam List
      */
     public void getCustomerVCamList() {
+
         pd.show();
         //************************
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
@@ -203,6 +193,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         }
         @Override
         protected void onPostExecute(String s) {
+            Log.d("MyApp", "getCustomerVCamList:" + s);
             MainActivity.setVcamList(VcamParser.parseFeed(s));
             updateDisplay();
         }

@@ -58,4 +58,7 @@ public class Vcam {
     public String getCUSTOMER_VCAM_PASSWORD() { return CUSTOMER_VCAM_PASSWORD; }
     public String getTOKEN() { return TOKEN; }
     public String getTYPE() { return TYPE; }
+    public String getVcamURL(){
+        return "http://" + URL + ":" + HLS + "/myapp/"+ TOKEN + "/index.m3u8";
+    }
 }

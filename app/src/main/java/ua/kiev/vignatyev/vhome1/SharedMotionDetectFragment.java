@@ -50,7 +50,7 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mMainActivity = (MainActivity) activity;
-        pd = new ProgressDialog(activity);
+        pd = new ProgressDialog(getActivity());
         pd.setTitle("Подключение к серверу");
         pd.setMessage("Ожидайте");
     }
@@ -129,7 +129,7 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
      * REST Request for getMotionDetectListByCustomer
      */
     private void getSharedMotionDetectListByCustomer() {
-
+        pd.show();
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getSharedMotionDetectListByCustomer");

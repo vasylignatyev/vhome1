@@ -33,6 +33,7 @@
         <item>Доступные камеры</item>
         <item>Мои оповещения</item>
         <item>Доступные оповещения</item>
+        <item>Выход</item>
     </string-array>
     <string name="title_activity_motion_detect">MotionDetectActivity</string>
 
