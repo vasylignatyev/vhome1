@@ -82,7 +82,15 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FrameLayout frameLayout = new FrameLayout(getActivity());
+
+        Credentials credentials = mListener.getCredentials();
+        mUserName = credentials.getUserName();
+        mUserPass = credentials.getUserPass();
+        //cbSavePassword.setChecked(credentials.isSavePassword());
+
         populateViewForOrientation(inflater, frameLayout);
+
+
 
         return frameLayout;
     }
@@ -96,10 +104,9 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         Button btnLogin = (Button) view.findViewById(R.id.btnLogin);
         Button btnRegisterRecovery = (Button) view.findViewById(R.id.btnRegisterRecovery);
 
-        Credentials credentials = mListener.getCredentials();
-        etEmail.setText(credentials.getUserName());
-        etPassword.setText(credentials.getUserPass());
-        cbSavePassword.setChecked(credentials.isSavePassword());
+        etEmail.setText(mUserName);
+        etPassword.setText(mUserPass);
+        //cbSavePassword.setChecked(credentials.isSavePassword());
 
         btnLogin.setOnClickListener(this);
         btnRegisterRecovery.setOnClickListener(this);
@@ -118,7 +125,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
      *
      */
     public interface OnLoginFragmentInteractionListener {
-        public void loggedIn(String user_token, String user_name, String user_pass,boolean rememberPassword);
+        public void loggedIn(String user_token, String user_name, String user_pass);
         public Credentials getCredentials();
     }
 
@@ -170,7 +177,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                 } else if (obj.has("token")) {
                     if(mListener != null){
                         String userToken = obj.getString("token");
-                        mListener.loggedIn(userToken, mUserName, mUserPass, cbSavePassword.isChecked());
+                        mListener.loggedIn(userToken, mUserName, mUserPass);
                     }
                 }
             } catch(JSONException e) {

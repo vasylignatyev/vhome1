@@ -130,8 +130,8 @@ public class MainActivity extends FragmentActivity
 
         sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         if(savedInstanceState == null) {
-            mUserName = sp.getString("userName", "");
-            mUserPass = sp.getString("userPass", "");
+            mUserName = sp.getString("userName", null);
+            mUserPass = sp.getString("userPass", null);
         } else {
             mUserToken  = savedInstanceState.getString("userToken");
             mUserName   = savedInstanceState.getString("userName");
@@ -312,7 +312,7 @@ public class MainActivity extends FragmentActivity
 
     }
     @Override
-    public void loggedIn(String user_token, String user_name, String user_pass, boolean savePassword) {
+    public void loggedIn(String user_token, String user_name, String user_pass) {
         mUserToken = user_token;
         mLoggedIn = true;
         mUserName = user_name;
@@ -345,13 +345,9 @@ public class MainActivity extends FragmentActivity
         SharedPreferences sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("userName", mUserName);
-        if(savePassword) {
-            editor.putString("userPass", mUserPass);
-        } else {
-            editor.putString("userPass", "");
-        }
-        editor.putBoolean("savePassword", savePassword);
+        editor.putString("userPass", mUserPass);
         editor.apply();
+
         mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
         // Set up the drawer.
@@ -372,6 +368,7 @@ public class MainActivity extends FragmentActivity
         String userPass = sp.getString("userPass", null);
         Boolean savePassword = sp.getBoolean("savePassword", true);
 
+        Log.d("MyApp", "userName: " + userName + ", userPass: " + userPass);
         return new Credentials(userName, userPass, savePassword);
     }
 
@@ -411,7 +408,7 @@ public class MainActivity extends FragmentActivity
                 } else if (obj.has("token")) {
                     //if(mListener != null){
                        String userToken = obj.getString("token");
-                       loggedIn(userToken, mUserName, mUserPass, true);
+                       loggedIn(userToken, mUserName, mUserPass);
                     //}
                 }
             } catch(JSONException e) {
