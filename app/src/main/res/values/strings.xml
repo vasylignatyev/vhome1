@@ -36,5 +36,6 @@
         <item>Выход</item>
     </string-array>
     <string name="title_activity_motion_detect">MotionDetectActivity</string>
+    <string name="title_activity_touch_image_view">TouchImageViewActivity</string>
 
 </resources>

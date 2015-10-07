@@ -37,7 +37,7 @@
         <activity
             android:name=".MotionDetectActivity"
             android:label="@string/title_activity_motion_detect" >
-         </activity>
+        </activity>
         <!-- [START gcm_receiver] -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -70,6 +70,10 @@
             android:exported="false" >
         </service>
 
+        <activity
+            android:name=".TouchImageViewActivity"
+            android:label="@string/title_activity_touch_image_view" >
+        </activity>
     </application>
 
 </manifest>

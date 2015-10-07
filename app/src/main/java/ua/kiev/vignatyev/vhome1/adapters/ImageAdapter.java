@@ -37,8 +37,8 @@ public class ImageAdapter extends PagerAdapter {
 
     private RequestQueue queue;
 
-    public ImageAdapter(Context context, List<String> images, int position, LruCache<String,
-            Bitmap> imageCache, RequestQueue queue) {
+    public ImageAdapter(Context context, List<String> images, int position,
+                        LruCache<String, Bitmap> imageCache, RequestQueue queue) {
         mContext = context;
         mImages = images;
 
@@ -67,14 +67,12 @@ public class ImageAdapter extends PagerAdapter {
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT );
-        //container.setLayoutParams(parms);
         imageView.setLayoutParams(parms);
-        imageView.setTag(position);
+        //imageView.setTag(position);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Log.d("MyApp", "Tag = " + view.getTag());
+            Log.d("MyApp", "ImageAdapter tag = " + view.getTag());
             }
         });
         container.addView(imageView, 0);
@@ -83,7 +81,7 @@ public class ImageAdapter extends PagerAdapter {
             final String uri = mImages.get(position);
             Bitmap bitmap = imageCache.get(uri);
             Log.d("MyApp", "URI: " + uri);
-
+            imageView.setTag(uri);
             if(bitmap != null){
                 Log.d("MyApp", "Loading image from cahch: " + uri);
                 imageView.setImageBitmap(bitmap);
@@ -93,7 +91,7 @@ public class ImageAdapter extends PagerAdapter {
                             @Override
                             public void onResponse(Bitmap bitmap) {
                                 imageView.setImageBitmap(bitmap);
-                                imageCache.put(uri, bitmap);
+                                //imageCache.put(uri, bitmap);
                             }
                         },
                         534, 300,

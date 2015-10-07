@@ -18,7 +18,6 @@ import com.android.volley.toolbox.Volley;
 import java.util.List;
 
 import ua.kiev.vignatyev.vhome1.R;
-import ua.kiev.vignatyev.vhome1.models.MotionDetect;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 
 /**
@@ -27,7 +26,7 @@ import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
     private Context context;
     private List<MotionDetectNew> mMotionDetectList;
-    private LruCache<String, Bitmap> imageCache;
+    private LruCache< String, Bitmap > imageCache;
     private RequestQueue queue;
     private ImageAdapter imageAdapter;
     //private ViewPager viewPager;
@@ -70,23 +69,4 @@ public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
         viewPager.setAdapter(imageAdapter);
         return view;
     }
-    private void setViewPagerAdapter(ViewPager v, MotionDetect motionDetect){
-        //ImageAdapter adapter = new ImageAdapter(context, motionDetect.images, ,imageCache, queue);
-        //v.setAdapter(adapter);
-    }
-
-    private class MotionDetectAndViev{
-        public MotionDetect motionDetect;
-        public ViewPager viewPager;
-        ImageAdapter imageAdapter;
-
-        public MotionDetectAndViev(MotionDetect motionDetect, ViewPager viewPager, ImageAdapter imageAdapter) {
-            this.motionDetect = motionDetect;
-            this.viewPager = viewPager;
-            this.imageAdapter = imageAdapter;
-        }
-    }
-    /**
-     * REST Request for genMotionDetect Popup
-     */
 }

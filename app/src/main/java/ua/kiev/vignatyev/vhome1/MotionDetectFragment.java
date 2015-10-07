@@ -109,10 +109,11 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
 
     public void updateDisplay(){
         Log.d("MyApp", "updateDisplay");
-        motionDetectAdapter = new MotionDetectAdapterNew(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
+
         //**********************
         // Set the adapter
         if(null != mMotionDetectList) {
+            motionDetectAdapter = new MotionDetectAdapterNew(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
             mListView.setAdapter(motionDetectAdapter);
         }
     }

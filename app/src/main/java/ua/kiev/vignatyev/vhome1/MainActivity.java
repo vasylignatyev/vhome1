@@ -20,8 +20,6 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -36,7 +34,6 @@ import ua.kiev.vignatyev.vhome1.models.Credentials;
 import ua.kiev.vignatyev.vhome1.models.Varch;
 import ua.kiev.vignatyev.vhome1.models.Vcam;
 
-//import android.support.v7.app.ActionBarActivity;
 
 
 public class MainActivity extends FragmentActivity
@@ -46,17 +43,16 @@ public class MainActivity extends FragmentActivity
     /**
      * STATIC VARS
      */
-    public static final int DIALOG_DATE = 1;
     public static final String SERVER_URL = "http://vhome.dev.oscon.com.ua/";
     public static final String PREFS_NAME = "VhomeSharedPreferences";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static List<Vcam> mVcamList = null;
     private static List<Vcam> mScamList = null;
     private static String mUserToken = null;
-    private static int screenWidth = 0;
-    private static int screenHeight = 0;
+    private static int screenWidth;
+    private static int screenHeight;
     public static Context context;
-    public static RequestQueue mRequestQueue;
+
     /**
      * VAR
      */
@@ -66,6 +62,7 @@ public class MainActivity extends FragmentActivity
     private CharSequence mTitle;
     private String mUserName, mUserPass;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+
     /**
      * GETTERS AND SETTERS
      */
@@ -137,8 +134,6 @@ public class MainActivity extends FragmentActivity
             mUserName   = savedInstanceState.getString("userName");
             mUserPass   = savedInstanceState.getString("userPass", null);
         }
-
-        mRequestQueue = Volley.newRequestQueue(this);
         confirmAuthentication();
     }
     private boolean checkPlayServices() {
@@ -250,14 +245,8 @@ public class MainActivity extends FragmentActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return (id == R.id.action_settings) ? true : super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onBackPressed() {
