@@ -63,7 +63,7 @@ public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
         view.setTag(motionDetect.iMotionDetect);
 
         final ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        imageAdapter = new ImageAdapter(context, motionDetect.images, position, imageCache, queue);
+        imageAdapter = new ImageAdapter(context, motionDetect.images, motionDetect.iMotionDetect, imageCache, queue);
 
 
         viewPager.setAdapter(imageAdapter);
