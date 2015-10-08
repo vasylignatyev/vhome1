@@ -2,12 +2,15 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,8 +26,8 @@ import java.util.ArrayList;
 
 public class TouchImageViewActivity extends Activity {
 
-    public final static String I_MOTION_DETECT = "I_MOTION_DETECT";
-    private int mIMotionDetect;
+    public final static String I_MOTION_DETECT = "i_motion_detect";
+    private String mIMotionDetect;
     private static ArrayList<String> mImagesUrlList = new ArrayList<>();
     private ExtendedViewPager mViewPager;
 
@@ -44,9 +47,10 @@ public class TouchImageViewActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            mIMotionDetect = extras.getInt(I_MOTION_DETECT, 0);
-            if(0 != mIMotionDetect) {
-                Log.d("MyApp", "TouchImageViewActivity I_MOTION_DETECT: " + Integer.toString(mIMotionDetect));
+            Log.d("MyApp", "TouchImageViewActivity extras:" + extras.toString());
+            mIMotionDetect = extras.getString(I_MOTION_DETECT, null);
+            if(null != mIMotionDetect) {
+                Log.d("MyApp", "TouchImageViewActivity I_MOTION_DETECT: " + mIMotionDetect);
                 getMD_URL_List();
             }
         }
@@ -70,11 +74,13 @@ public class TouchImageViewActivity extends Activity {
         public int getCount() {
             return mImagesUrlList.size();
         }
+        String uri;
+        TouchImageView img;
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
-            final String uri = mImagesUrlList.get(position);
-            final TouchImageView img = new TouchImageView(container.getContext());
+            uri = mImagesUrlList.get(position);
+            img = new TouchImageView(container.getContext());
             container.addView( img, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
             ImageRequest imageRequest = new ImageRequest( MainActivity.SERVER_URL + uri,
@@ -105,8 +111,18 @@ public class TouchImageViewActivity extends Activity {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             //container.removeView((View) object);
-            container.removeView((View) object);
+            //container.removeView((View) object);
             Log.d("MyApp", "TouchImageAdapter::destroyItem: " + Integer.toString(position));
+
+            View view = (View)object;
+
+            BitmapDrawable bmpDrawable = (BitmapDrawable) img.getDrawable();
+            if (bmpDrawable != null && bmpDrawable.getBitmap() != null) {
+                // This is the important part
+                bmpDrawable.getBitmap().recycle();
+            }
+            ((ViewPager) container).removeView(view);
+            view = null;
         }
 
         @Override
@@ -125,7 +141,7 @@ public class TouchImageViewActivity extends Activity {
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getMD_URL_List");
-        rp.setParam("i_motion_detect", Integer.toString(mIMotionDetect));
+        rp.setParam("i_motion_detect", mIMotionDetect);
 
         getMD_URL_ListtAsyncTask task = new getMD_URL_ListtAsyncTask();
         task.execute(rp);

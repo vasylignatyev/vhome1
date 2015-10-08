@@ -82,7 +82,7 @@ public class ImageAdapter extends PagerAdapter {
                 Log.d("MyApp", "ImageAdapter tag = " + Integer.toString(iMotionDetect));
 
                 Intent intent = new Intent(mContext, TouchImageViewActivity.class);
-                intent.putExtra(TouchImageViewActivity.I_MOTION_DETECT, iMotionDetect);
+                intent.putExtra(TouchImageViewActivity.I_MOTION_DETECT, Integer.toString(iMotionDetect));
                 mContext.startActivity(intent);
             }
         });

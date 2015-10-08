@@ -14,6 +14,7 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 import ua.kiev.vignatyev.vhome1.MotionDetectActivity;
 import ua.kiev.vignatyev.vhome1.R;
+import ua.kiev.vignatyev.vhome1.TouchImageViewActivity;
 
 /**
  * Created by vignatyev on 24.09.2015.
@@ -70,7 +71,8 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param message GCM message received.
      */
     private void sendNotification(String message, Bundle data) {
-        Intent intent = new Intent(this, MotionDetectActivity.class);
+        //Intent intent = new Intent(this, MotionDetectActivity.class);
+        Intent intent = new Intent(this, TouchImageViewActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         intent.putExtras(data);
