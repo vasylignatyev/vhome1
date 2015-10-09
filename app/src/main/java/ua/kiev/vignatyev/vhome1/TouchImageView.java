@@ -1,8 +1,5 @@
 package ua.kiev.vignatyev.vhome1;
 
-/**
- * Created by vignatyev on 07.10.2015.
- */
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;

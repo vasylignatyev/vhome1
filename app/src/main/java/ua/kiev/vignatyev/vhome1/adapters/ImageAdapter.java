@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -23,7 +25,7 @@ import java.net.URL;
 import java.util.List;
 
 import ua.kiev.vignatyev.vhome1.MainActivity;
-import ua.kiev.vignatyev.vhome1.TouchImageViewActivity;
+import ua.kiev.vignatyev.vhome1.MotionDetectActivityNew;
 
 /**
  * Created by vignatyev on 10.09.2015.
@@ -68,8 +70,9 @@ public class ImageAdapter extends PagerAdapter {
         Log.d("MyApp", "ImageAdapter::instantiateItem position: " + position);
 
         final ImageView imageView = new ImageView(mContext);
-        //int padding = mContext.getResources().getDimensionPixelSize(R.dimen.padding_medium);
+        //setTAB fpr image for findViewWithTag
         int padding = 2;
+
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT );
@@ -81,8 +84,8 @@ public class ImageAdapter extends PagerAdapter {
                 int iMotionDetect = Integer.parseInt(view.getTag().toString());
                 Log.d("MyApp", "ImageAdapter tag = " + Integer.toString(iMotionDetect));
 
-                Intent intent = new Intent(mContext, TouchImageViewActivity.class);
-                intent.putExtra(TouchImageViewActivity.I_MOTION_DETECT, Integer.toString(iMotionDetect));
+                Intent intent = new Intent(mContext, MotionDetectActivityNew.class);
+                intent.putExtra(MotionDetectActivityNew.I_MOTION_DETECT, Integer.toString(iMotionDetect));
                 mContext.startActivity(intent);
             }
         });
@@ -115,11 +118,6 @@ public class ImageAdapter extends PagerAdapter {
                         }
                 );
                 queue.add(imageRequest);
-                /*
-                UriAndImageView uriAndImageView = new UriAndImageView(imageView, uri);
-                ImageLoader imageLoader = new ImageLoader();
-                imageLoader.execute(uriAndImageView);
-                */
             }
         } else {
             Log.d("MyApp", "mImages is NULL");
@@ -128,6 +126,16 @@ public class ImageAdapter extends PagerAdapter {
     }
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
+        ImageView view = (ImageView) container.getChildAt(0);
+        if(view != null) {
+            Drawable drawable = view.getDrawable();
+            if (drawable instanceof BitmapDrawable) {
+                Log.d("MyApp", "Recycling image");
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                bitmap.recycle();
+            }
+        }
         container.removeView((ImageView) object);
     }
 

@@ -71,7 +71,7 @@
         </service>
 
         <activity
-            android:name=".TouchImageViewActivity"
+            android:name=".MotionDetectActivityNew"
             android:label="@string/title_activity_touch_image_view" >
         </activity>
     </application>

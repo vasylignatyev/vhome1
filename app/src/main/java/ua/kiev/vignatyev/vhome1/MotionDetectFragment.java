@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,6 +96,12 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
         getMotionDetectListByCustomer();
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        ((ArrayAdapter)mListView.getAdapter()).clear();
+        super.onDestroyView();
     }
 
     @Override

@@ -69,4 +69,10 @@ public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
         viewPager.setAdapter(imageAdapter);
         return view;
     }
+
+    @Override
+    public void clear() {
+        Log.d("MyApp", "MotionDetectAdapterNew::clear");
+        super.clear();
+    }
 }

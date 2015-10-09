@@ -3,14 +3,13 @@ package ua.kiev.vignatyev.vhome1;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -24,7 +23,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 
-public class TouchImageViewActivity extends Activity {
+public class MotionDetectActivityNew extends Activity {
 
     public final static String I_MOTION_DETECT = "i_motion_detect";
     private String mIMotionDetect;
@@ -41,88 +40,79 @@ public class TouchImageViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_touch_image_view);
 
-        Log.d("MyApp", "TouchImageViewActivity::onCreate");
-
         queue = Volley.newRequestQueue(this);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            Log.d("MyApp", "TouchImageViewActivity extras:" + extras.toString());
             mIMotionDetect = extras.getString(I_MOTION_DETECT, null);
             if(null != mIMotionDetect) {
-                Log.d("MyApp", "TouchImageViewActivity I_MOTION_DETECT: " + mIMotionDetect);
+                Log.d("MyApp", "MotionDetectActivityNew I_MOTION_DETECT: " + mIMotionDetect);
                 getMD_URL_List();
             }
         }
         mViewPager = (ExtendedViewPager) findViewById(R.id.view_pager);
         setContentView(mViewPager);
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("MyApp", "TouchImageViewActivity::onDestroy");
+        Log.d("MyApp", "MotionDetectActivityNew::onDestroy");
        // touchImageAdapter.n
-        mViewPager.setAdapter(touchImageAdapter);
+        mViewPager.setAdapter(null);
     }
-
     //**************************************************************
     static class TouchImageAdapter extends PagerAdapter {
 
+        //private TouchImageView img;
         @Override
         public int getCount() {
             return mImagesUrlList.size();
         }
-        String uri;
-        TouchImageView img;
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
-            uri = mImagesUrlList.get(position);
-            img = new TouchImageView(container.getContext());
-            container.addView( img, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            final TouchImageView img = new TouchImageView(container.getContext());
+            img.setId(1966);
 
-            ImageRequest imageRequest = new ImageRequest( MainActivity.SERVER_URL + uri,
-                    new Response.Listener<Bitmap>() {
-                        @Override
-                        public void onResponse(Bitmap bitmap) {
-                            Log.d("MyApp", "TouchImageAdapter load: " + uri);
-                            //imageView.setImageBitmap(bitmap);
-                            //imageCache.put(uri, bitmap);
-                            img.setImageBitmap(bitmap);
-                            //if (bitmap != null && !bitmap.isRecycled())
-                                //bitmap.recycle();
+            String url = MainActivity.SERVER_URL + mImagesUrlList.get(position);
+            Log.d("MyApp", "Gettining image: " + url);
 
-                        }
-                    }, 0,0,
-                    Bitmap.Config.ARGB_8888,
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-                            Log.d("MyApp",volleyError.getMessage());
-                        }
+            container.addView(img, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+            ImageRequest imageRequest = new ImageRequest( url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        img.setImageBitmap(bitmap);
                     }
+                }, 0,0,
+                Bitmap.Config.ARGB_8888,
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.d("MyApp",volleyError.getMessage());
+                    }
+                }
             );
             queue.add(imageRequest);
+
             return img;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            //container.removeView((View) object);
-            //container.removeView((View) object);
-            Log.d("MyApp", "TouchImageAdapter::destroyItem: " + Integer.toString(position));
 
-            View view = (View)object;
+            TouchImageView img = (TouchImageView) container.findViewById(1966);
 
-            BitmapDrawable bmpDrawable = (BitmapDrawable) img.getDrawable();
-            if (bmpDrawable != null && bmpDrawable.getBitmap() != null) {
-                // This is the important part
-                bmpDrawable.getBitmap().recycle();
+            Drawable drawable = img.getDrawable();
+
+            if (drawable instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                bitmap.recycle();
             }
-            ((ViewPager) container).removeView(view);
-            view = null;
+            container.removeView((View) object);
         }
 
         @Override
