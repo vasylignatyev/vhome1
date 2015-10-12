@@ -1,15 +1,11 @@
 package ua.kiev.vignatyev.vhome1.parsers;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import ua.kiev.vignatyev.vhome1.models.MotionDetect;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectEvent;
 
 /**

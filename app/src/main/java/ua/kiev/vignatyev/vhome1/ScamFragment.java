@@ -15,10 +15,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import ua.kiev.vignatyev.vhome1.adapters.VcamAdapter;
+import ua.kiev.vignatyev.vhome1.adapters.VcamArrayAdapter;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
 
-public class ScamFragment extends Fragment implements AbsListView.OnItemClickListener, VcamAdapter.OnAdapterInteractionListener {
+public class ScamFragment extends Fragment implements AbsListView.OnItemClickListener, VcamArrayAdapter.OnAdapterInteractionListener {
     /**
      * STATIC VAR
      */
@@ -27,7 +27,7 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
     /**
      * VARS
      */
-    private VcamAdapter vcamAdapter;
+    private VcamArrayAdapter vcamArrayAdapter;
     private MainActivity mMainActivity;
     private ProgressDialog pd;
     private String mUserToken;
@@ -116,14 +116,14 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
      *
      */
     public void updateDisplay(){
-        vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, MainActivity.getScamList());
+        vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getScamList());
         //**********************
         // Set the listener
-        vcamAdapter.setOnAdapterInteractionListener(this);
+        vcamArrayAdapter.setOnAdapterInteractionListener(this);
         //**********************
         // Set the adapter
-        if(null != vcamAdapter) {
-            mListView.setAdapter(vcamAdapter);
+        if(null != vcamArrayAdapter) {
+            mListView.setAdapter(vcamArrayAdapter);
         }
         pd.hide();
     }

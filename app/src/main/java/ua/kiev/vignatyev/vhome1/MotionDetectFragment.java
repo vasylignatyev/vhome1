@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import ua.kiev.vignatyev.vhome1.adapters.MotionDetectAdapterNew;
+import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 
@@ -35,7 +35,7 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
      */
     private String mUserToken;
     private MainActivity mMainActivity;
-    private MotionDetectAdapterNew motionDetectAdapter;
+    private MDArrayAdapter motionDetectAdapter;
     private AbsListView mListView;
     private ProgressDialog pd;
     /**
@@ -120,7 +120,7 @@ public class MotionDetectFragment extends Fragment implements AbsListView.OnItem
         //**********************
         // Set the adapter
         if(null != mMotionDetectList) {
-            motionDetectAdapter = new MotionDetectAdapterNew(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
+            motionDetectAdapter = new MDArrayAdapter(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
             mListView.setAdapter(motionDetectAdapter);
         }
     }

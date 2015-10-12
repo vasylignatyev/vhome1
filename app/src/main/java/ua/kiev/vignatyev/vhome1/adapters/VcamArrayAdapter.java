@@ -24,14 +24,14 @@ import ua.kiev.vignatyev.vhome1.models.Vcam;
 /**
  * Created by vignatyev on 01.07.2015.
  */
-public class VcamAdapter extends ArrayAdapter<Vcam> {
+public class VcamArrayAdapter extends ArrayAdapter<Vcam> {
     private Context context;
     private static String THUMB_NAIL_URL = "http://vhome.dev.oscon.com.ua/vcam_thumbnail/";
 
 
     private List<Vcam> vcamList;
 
-    public  VcamAdapter(Context context, int resource, List<Vcam> objects) {
+    public VcamArrayAdapter(Context context, int resource, List<Vcam> objects) {
         super(context, resource, objects);
         this.context = context;
         this.vcamList = objects;
@@ -49,16 +49,17 @@ public class VcamAdapter extends ArrayAdapter<Vcam> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater =
-                (LayoutInflater)context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.item_vcam, parent, false);
-
+        if(convertView == null) {
+            LayoutInflater inflater =
+                    (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.item_vcam, parent, false);
+        }
         Vcam vcam = vcamList.get(position);
-        TextView vcamName = (TextView) view.findViewById(R.id.vcamName);
+        TextView vcamName = (TextView) convertView.findViewById(R.id.vcamName);
         vcamName.setText(vcam.VCAM_NAME);
-        TextView tvVcamLocation = (TextView) view.findViewById(R.id.vcamLocation);
+        TextView tvVcamLocation = (TextView) convertView.findViewById(R.id.vcamLocation);
         tvVcamLocation.setText(vcam.VCAM_LOCATION);
-        Button vacmArchiveButton = (Button) view.findViewById(R.id.vacmArchiveButton);
+        Button vacmArchiveButton = (Button) convertView.findViewById(R.id.vacmArchiveButton);
 
         vacmArchiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,21 +72,21 @@ public class VcamAdapter extends ArrayAdapter<Vcam> {
         });
 
         if(vcam.THUMBNAIL != null) {
-            ImageView ivThumb = (ImageView)  view.findViewById(R.id.ivThumb);
+            ImageView ivThumb = (ImageView)  convertView.findViewById(R.id.ivThumb);
             ivThumb.setImageBitmap(vcam.THUMBNAIL);
         } else {
             VcamAndThumb container = new VcamAndThumb();
             container.vcam = vcam;
-            container.view = view;
+            container.view  = convertView;
 
             ThumbLoader loader = new ThumbLoader();
             loader.execute(container);
             }
 
-        view.setTag(position);
+        convertView.setTag(position);
         vacmArchiveButton.setTag(vcam.TOKEN);
 
-        return view;
+        return convertView;
     }
     class VcamAndThumb {
         public Vcam vcam;

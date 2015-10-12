@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import ua.kiev.vignatyev.vhome1.adapters.MotionDetectAdapterNew;
+import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 
@@ -111,7 +111,7 @@ public class MotionDetectActivity extends Activity {
      */
     private void updateDisplay() {
         Log.d("MyApp", "updateDisplay");
-        MotionDetectAdapterNew motionDetectAdapter = new MotionDetectAdapterNew(this, R.layout.item_motion_detect, mMotionList);
+        MDArrayAdapter motionDetectAdapter = new MDArrayAdapter(this, R.layout.item_motion_detect, mMotionList);
         //**********************
         // Set the adapter
         mListView.setAdapter(motionDetectAdapter);

@@ -23,16 +23,16 @@ import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 /**
  * Created by vignatyev on 02.09.2015.
  */
-public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
+public class MDArrayAdapter extends ArrayAdapter<MotionDetectNew> {
     private Context context;
     private List<MotionDetectNew> mMotionDetectList;
     private LruCache< String, Bitmap > imageCache;
     private RequestQueue queue;
-    private ImageAdapter imageAdapter;
+    private ImagePagerAdapter imagePagerAdapter;
     //private ViewPager viewPager;
 
 
-    public MotionDetectAdapterNew(Context context, int resource, List<MotionDetectNew> objects) {
+    public MDArrayAdapter(Context context, int resource, List<MotionDetectNew> objects) {
         super(context, resource, objects);
         this.context = context;
         this.mMotionDetectList = objects;
@@ -48,10 +48,22 @@ public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        LayoutInflater inflater =
-                (LayoutInflater)context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.item_motion_detect, parent, false);
+        ViewPager viewPager;
+        View view;
+        Log.d("MyApp","MDArrayAdapter::getView: " + position + " " + convertView);
 
+        if(convertView !=null){
+            viewPager = (ViewPager) convertView.findViewById(R.id.view_pager);
+            viewPager.setAdapter(null);
+
+            int i = (int) convertView.getTag();
+            mMotionDetectList.get(i).viewPager = null;
+            view = convertView;
+        } else {
+            LayoutInflater inflater =
+                    (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.item_motion_detect, parent, false);
+        }
         final MotionDetectNew motionDetect = mMotionDetectList.get(position);
 
         TextView tvNotificationDate = (TextView) view.findViewById(R.id.tvNotificationDate);
@@ -60,19 +72,26 @@ public class MotionDetectAdapterNew extends ArrayAdapter<MotionDetectNew> {
         tvNotificationDate.setText(motionDetect.date);
         tvNotificationCamName.setText(motionDetect.cam_name);
 
-        view.setTag(motionDetect.iMotionDetect);
+        view.setTag(position);
 
-        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        imageAdapter = new ImageAdapter(context, motionDetect.images, motionDetect.iMotionDetect, imageCache, queue);
+        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        imagePagerAdapter = new ImagePagerAdapter(context, motionDetect.images, motionDetect.iMotionDetect, imageCache, queue);
+        viewPager.setAdapter(imagePagerAdapter);
 
-
-        viewPager.setAdapter(imageAdapter);
+        motionDetect.viewPager = viewPager;
         return view;
     }
 
     @Override
     public void clear() {
-        Log.d("MyApp", "MotionDetectAdapterNew::clear");
+        Log.d("MyApp", "MDArrayAdapter::clear");
+        ViewPager viewPager;
+        for(MotionDetectNew motionDetectNew : mMotionDetectList ) {
+            if(motionDetectNew.viewPager != null) {
+                //viewPager = (ViewPager) motionDetectNew.view;
+                motionDetectNew.viewPager.setAdapter(null);
+            }
+        }
         super.clear();
     }
 }

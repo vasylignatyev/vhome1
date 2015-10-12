@@ -30,7 +30,7 @@ import ua.kiev.vignatyev.vhome1.MotionDetectActivityNew;
 /**
  * Created by vignatyev on 10.09.2015.
  */
-public class ImageAdapter extends PagerAdapter {
+public class ImagePagerAdapter extends PagerAdapter {
     /*
      * VARS
      */
@@ -42,8 +42,8 @@ public class ImageAdapter extends PagerAdapter {
 
     private RequestQueue queue;
 
-    public ImageAdapter(Context context, List<String> images, int iMotionDetect,
-                        LruCache<String, Bitmap> imageCache, RequestQueue queue) {
+    public ImagePagerAdapter(Context context, List<String> images, int iMotionDetect,
+                             LruCache<String, Bitmap> imageCache, RequestQueue queue) {
         mContext = context;
         mImages = images;
         mIMotionDetect = iMotionDetect;

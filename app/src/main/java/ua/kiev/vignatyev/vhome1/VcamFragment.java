@@ -15,10 +15,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import ua.kiev.vignatyev.vhome1.adapters.VcamAdapter;
+import ua.kiev.vignatyev.vhome1.adapters.VcamArrayAdapter;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
 
-public class VcamFragment extends Fragment implements AbsListView.OnItemClickListener, VcamAdapter.OnAdapterInteractionListener {
+public class VcamFragment extends Fragment implements AbsListView.OnItemClickListener, VcamArrayAdapter.OnAdapterInteractionListener {
     /**
      * STATIC VAR
      */
@@ -27,7 +27,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     /**
      * VARS
      */
-    private VcamAdapter vcamAdapter;
+    private VcamArrayAdapter vcamArrayAdapter;
     private MainActivity mMainActivity;
     private ProgressDialog pd;
     private String mUserToken;
@@ -116,11 +116,11 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      *
      */
     public void updateDisplay(){
-        vcamAdapter = new VcamAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
-        if(null != vcamAdapter) {
-            vcamAdapter.setOnAdapterInteractionListener(this);
+        vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
+        if(null != vcamArrayAdapter) {
+            vcamArrayAdapter.setOnAdapterInteractionListener(this);
             if(null != mListView ) {
-                mListView.setAdapter(vcamAdapter);
+                mListView.setAdapter(vcamArrayAdapter);
             }
         }
         pd.hide();

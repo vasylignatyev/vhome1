@@ -18,12 +18,12 @@ import ua.kiev.vignatyev.vhome1.models.Varch;
 /**
  * Created by vignatyev on 18.08.2015.
  */
-public class VarchAdapter extends ArrayAdapter<Varch> {
+public class VarchArrayAdapter extends ArrayAdapter<Varch> {
     private Context context;
     private List<Varch> mVarchList;
 
 
-    public VarchAdapter(Context context, int resource, List<Varch> objects) {
+    public VarchArrayAdapter(Context context, int resource, List<Varch> objects) {
         super(context, resource, objects);
         this.context = context;
         this.mVarchList = objects;
@@ -31,22 +31,23 @@ public class VarchAdapter extends ArrayAdapter<Varch> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater =
-                (LayoutInflater)context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.item_varch, parent, false);
-
+        if(convertView == null) {
+            LayoutInflater inflater =
+                    (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.item_varch, parent, false);
+        }
         Varch varch = mVarchList.get(position);
 
-        TextView tvArchDate = (TextView) view.findViewById(R.id.tvArchDate);
-        TextView tvArchTime = (TextView) view.findViewById(R.id.tvArchTime);
-        TextView tvArchDuration = (TextView) view.findViewById(R.id.tvArchDuration);
+        TextView tvArchDate = (TextView) convertView.findViewById(R.id.tvArchDate);
+        TextView tvArchTime = (TextView) convertView.findViewById(R.id.tvArchTime);
+        TextView tvArchDuration = (TextView) convertView.findViewById(R.id.tvArchDuration);
 
         tvArchDate.setText((CharSequence) varch.date);
         tvArchTime.setText((CharSequence) varch.time);
         tvArchDuration.setText((CharSequence) varch.duration);
 
-        view.setTag(varch);
+        convertView.setTag(varch);
 
-        return view;
+        return convertView;
     }
 }

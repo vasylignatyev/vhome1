@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-import ua.kiev.vignatyev.vhome1.adapters.VarchAdapter;
+import ua.kiev.vignatyev.vhome1.adapters.VarchArrayAdapter;
 import ua.kiev.vignatyev.vhome1.models.Varch;
 import ua.kiev.vignatyev.vhome1.parsers.VarchParser;
 
@@ -52,7 +52,7 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
     private int mMonth;
     private int mDay;
     private List<Varch> mVarchList;
-    private VarchAdapter mVarchAdapter;
+    private VarchArrayAdapter mVarchArrayAdapter;
     private AbsListView mListView;
 
     /**
@@ -201,10 +201,10 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
      *
      */
     public void updateDisplay(){
-        mVarchAdapter = new VarchAdapter(getActivity(), R.layout.item_varch, mVarchList);
+        mVarchArrayAdapter = new VarchArrayAdapter(getActivity(), R.layout.item_varch, mVarchList);
         //**********************
         // Set the adapter
-        mListView.setAdapter(mVarchAdapter);
+        mListView.setAdapter(mVarchArrayAdapter);
     }
 
     /**
