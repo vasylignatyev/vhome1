@@ -75,33 +75,28 @@ public class VcamArrayAdapter extends ArrayAdapter<Vcam> {
             ImageView ivThumb = (ImageView)  convertView.findViewById(R.id.ivThumb);
             ivThumb.setImageBitmap(vcam.THUMBNAIL);
         } else {
-            VcamAndThumb container = new VcamAndThumb();
-            container.vcam = vcam;
-            container.view  = convertView;
-
+            final VcamAndThumb container = new VcamAndThumb(vcam, convertView);
             ThumbLoader loader = new ThumbLoader();
             loader.execute(container);
-            }
+        }
 
         convertView.setTag(position);
         vacmArchiveButton.setTag(vcam.TOKEN);
 
         return convertView;
     }
-    class VcamAndThumb {
+    private class VcamAndThumb {
+        public VcamAndThumb(Vcam vcam, View view) {
+            this.vcam = vcam;
+            this.view = view;
+        }
+
         public Vcam vcam;
         public View view;
         public Bitmap thumb;
 
     }
     private class ThumbLoader extends AsyncTask<VcamAndThumb, Void, VcamAndThumb> {
-
-        @Override
-        protected void onPostExecute(VcamAndThumb vcamAndThumb) {
-            ImageView ivThumb = (ImageView)  vcamAndThumb.view.findViewById(R.id.ivThumb);
-            ivThumb.setImageBitmap(vcamAndThumb.thumb);
-            vcamAndThumb.vcam.THUMBNAIL = vcamAndThumb.thumb;
-        }
 
         @Override
         protected VcamAndThumb doInBackground(VcamAndThumb... params) {
@@ -119,6 +114,15 @@ public class VcamArrayAdapter extends ArrayAdapter<Vcam> {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(VcamAndThumb vcamAndThumb) {
+            if( vcamAndThumb!=null ) {
+                ImageView ivThumb = (ImageView) vcamAndThumb.view.findViewById(R.id.ivThumb);
+                ivThumb.setImageBitmap(vcamAndThumb.thumb);
+                vcamAndThumb.vcam.THUMBNAIL = vcamAndThumb.thumb;
+            }
         }
     }
 }

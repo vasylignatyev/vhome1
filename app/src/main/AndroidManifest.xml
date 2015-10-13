@@ -34,10 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MotionDetectActivity"
-            android:label="@string/title_activity_motion_detect" >
-        </activity>
         <!-- [START gcm_receiver] -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -71,8 +67,14 @@
         </service>
 
         <activity
-            android:name=".MotionDetectActivityNew"
+            android:name=".MDActivity"
             android:label="@string/title_activity_touch_image_view" >
+        </activity>
+        <activity
+            android:name=".MDFullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_mdfullscreen"
+            android:theme="@style/FullscreenTheme" >
         </activity>
     </application>
 

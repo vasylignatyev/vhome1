@@ -23,7 +23,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 
-public class MotionDetectActivityNew extends Activity {
+public class MDActivity extends Activity {
 
     public final static String I_MOTION_DETECT = "i_motion_detect";
     private String mIMotionDetect;
@@ -46,7 +46,7 @@ public class MotionDetectActivityNew extends Activity {
         if (extras != null) {
             mIMotionDetect = extras.getString(I_MOTION_DETECT, null);
             if(null != mIMotionDetect) {
-                Log.d("MyApp", "MotionDetectActivityNew I_MOTION_DETECT: " + mIMotionDetect);
+                Log.d("MyApp", "MDActivity I_MOTION_DETECT: " + mIMotionDetect);
                 getMD_URL_List();
             }
         }
@@ -57,7 +57,7 @@ public class MotionDetectActivityNew extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("MyApp", "MotionDetectActivityNew::onDestroy");
+        Log.d("MyApp", "MDActivity::onDestroy");
        // touchImageAdapter.n
         mViewPager.setAdapter(null);
     }

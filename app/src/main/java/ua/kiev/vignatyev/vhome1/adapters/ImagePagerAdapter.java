@@ -24,8 +24,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import ua.kiev.vignatyev.vhome1.MDActivity;
 import ua.kiev.vignatyev.vhome1.MainActivity;
-import ua.kiev.vignatyev.vhome1.MotionDetectActivityNew;
 
 /**
  * Created by vignatyev on 10.09.2015.
@@ -84,8 +84,8 @@ public class ImagePagerAdapter extends PagerAdapter {
                 int iMotionDetect = Integer.parseInt(view.getTag().toString());
                 Log.d("MyApp", "ImageAdapter tag = " + Integer.toString(iMotionDetect));
 
-                Intent intent = new Intent(mContext, MotionDetectActivityNew.class);
-                intent.putExtra(MotionDetectActivityNew.I_MOTION_DETECT, Integer.toString(iMotionDetect));
+                Intent intent = new Intent(mContext, MDActivity.class);
+                intent.putExtra(MDActivity.I_MOTION_DETECT, Integer.toString(iMotionDetect));
                 mContext.startActivity(intent);
             }
         });

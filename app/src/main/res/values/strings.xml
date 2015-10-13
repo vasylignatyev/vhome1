@@ -38,4 +38,8 @@
     <string name="title_activity_motion_detect">MotionDetectActivity</string>
     <string name="title_activity_touch_image_view">TouchImageViewActivity</string>
 
+    <string name="title_activity_mdfullscreen">MDFullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>
