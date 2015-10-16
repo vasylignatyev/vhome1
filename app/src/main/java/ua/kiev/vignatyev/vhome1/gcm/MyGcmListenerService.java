@@ -31,11 +31,14 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
         String motionDate = data.getString("motion_date",null);
+        String vcamLocation = data.getString("vcam_location",null);
+        String vcamName = data.getString("vcam_name",null);
 
         Log.d("MyApp", "From: " + from);
         Log.d("MyApp", "Message: " + message);
-        if(null != motionDate)
-            Log.d("MyApp", "motionDate: " + motionDate);
+        if(null != motionDate) Log.d("MyApp", "motionDate: " + motionDate);
+        if(null != vcamLocation) Log.d("MyApp", "vcamLocation: " + vcamLocation);
+        if(null != vcamName) Log.d("MyApp", "vcamName: " + vcamName);
 
 
         if (from.startsWith("/topics/")) {
@@ -43,6 +46,7 @@ public class MyGcmListenerService extends GcmListenerService {
         } else {
             // normal downstream message.
         }
+
 
         // [START_EXCLUDE]
         /**
@@ -73,13 +77,13 @@ public class MyGcmListenerService extends GcmListenerService {
 
         intent.putExtras(data);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, data.getInt("i_customer_vcam", 0), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("Motion Detect")
+                .setContentTitle(data.getString("vcam_name", "Детектор движения"))
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
