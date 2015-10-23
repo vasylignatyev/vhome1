@@ -2,15 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ua.kiev.vignatyev.vhome1" >
 
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="22" />
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="22" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="ua.kiev.vignatyev.vhome1.permission.C2D_MESSAGE"
+    <uses-permission
+        android:name="ua.kiev.vignatyev.vhome1.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
-
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -22,6 +24,9 @@
     <permission
         android:name="ua.kiev.vignatyev.vhome1.permission.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+
+    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -46,7 +51,7 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <!--action android:name="com.google.android.c2dm.intent.REGISTRATION" /-->
+                <!-- action android:name="com.google.android.c2dm.intent.REGISTRATION" / -->
 
                 <category android:name="ua.kiev.vignatyev.vhome1" />
             </intent-filter>
@@ -80,6 +85,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_mdfullscreen"
             android:theme="@style/FullscreenTheme" >
+        </activity>
+        <activity android:name=".validator.MDActivityNew" >
         </activity>
     </application>
 

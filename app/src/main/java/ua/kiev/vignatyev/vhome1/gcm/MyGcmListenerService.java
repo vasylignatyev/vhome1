@@ -77,8 +77,13 @@ public class MyGcmListenerService extends GcmListenerService {
 
         intent.putExtras(data);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, data.getInt("i_customer_vcam", 0), intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        String iCustomerVcam = data.getString("i_customer_vcam", null);
+
+        Log.d("MyApp", "iCustomerVcam = " + iCustomerVcam);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(iCustomerVcam), intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+               // PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)

@@ -196,7 +196,7 @@ public class MainActivity extends FragmentActivity
                     newFragment = ScamFragment.newInstance(mUserToken);
                     break;
                 case 2:
-                    newFragment = MotionDetectFragment.newInstance(mUserToken);
+                    newFragment = MDFragment.newInstance(mUserToken);
                     break;
                 case 3:
                     newFragment = SharedMotionDetectFragment.newInstance(mUserToken);

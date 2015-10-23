@@ -28,7 +28,7 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
      * Static VARS
      */
     private static final String ARG_USER_TOKEN = "user_token";
-    private static final String TAG = "MotionDetectFragment";
+    private static final String TAG = "MDFragment";
     private static ArrayList<MotionDetectNew> mMotionDetectList = null;
     /**
      * VARS
