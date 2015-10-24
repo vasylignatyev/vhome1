@@ -14,6 +14,7 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 import ua.kiev.vignatyev.vhome1.MDActivity;
 import ua.kiev.vignatyev.vhome1.R;
+import ua.kiev.vignatyev.vhome1.validator.MDActivityNew;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -72,7 +73,8 @@ public class MyGcmListenerService extends GcmListenerService {
      */
     private void sendNotification(String message, Bundle data) {
 
-        Intent intent = new Intent(this, MDActivity.class);
+        //Intent intent = new Intent(this, MDActivity.class);
+        Intent intent = new Intent(this, MDActivityNew.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         intent.putExtras(data);
@@ -82,8 +84,8 @@ public class MyGcmListenerService extends GcmListenerService {
         Log.d("MyApp", "iCustomerVcam = " + iCustomerVcam);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(iCustomerVcam), intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-               // PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent.FLAG_UPDATE_CURRENT);
+            //PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -97,6 +99,6 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(Integer.parseInt(iCustomerVcam), notificationBuilder.build());
     }
 }
