@@ -12,9 +12,8 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-import ua.kiev.vignatyev.vhome1.MDActivity;
 import ua.kiev.vignatyev.vhome1.R;
-import ua.kiev.vignatyev.vhome1.validator.MDActivityNew;
+import ua.kiev.vignatyev.vhome1.MDActivityNew;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -35,11 +34,11 @@ public class MyGcmListenerService extends GcmListenerService {
         String vcamLocation = data.getString("vcam_location",null);
         String vcamName = data.getString("vcam_name",null);
 
-        Log.d("MyApp", "From: " + from);
-        Log.d("MyApp", "Message: " + message);
-        if(null != motionDate) Log.d("MyApp", "motionDate: " + motionDate);
-        if(null != vcamLocation) Log.d("MyApp", "vcamLocation: " + vcamLocation);
-        if(null != vcamName) Log.d("MyApp", "vcamName: " + vcamName);
+        //Log.d("MyApp", "From: " + from);
+       // Log.d("MyApp", "Message: " + message);
+        //if(null != motionDate) Log.d("MyApp", "motionDate: " + motionDate);
+       // if(null != vcamLocation) Log.d("MyApp", "vcamLocation: " + vcamLocation);
+        //if(null != vcamName) Log.d("MyApp", "vcamName: " + vcamName);
 
 
         if (from.startsWith("/topics/")) {
@@ -81,7 +80,7 @@ public class MyGcmListenerService extends GcmListenerService {
 
         String iCustomerVcam = data.getString("i_customer_vcam", null);
 
-        Log.d("MyApp", "iCustomerVcam = " + iCustomerVcam);
+       // Log.d("MyApp", "iCustomerVcam = " + iCustomerVcam);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(iCustomerVcam), intent,
             PendingIntent.FLAG_UPDATE_CURRENT);

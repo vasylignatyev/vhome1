@@ -49,8 +49,6 @@ public class MainActivity extends FragmentActivity
     private static List<Vcam> mVcamList = null;
     private static List<Vcam> mScamList = null;
     private static String mUserToken = null;
-    private static int screenWidth;
-    private static int screenHeight;
     public static Context context;
 
     /**
@@ -86,32 +84,10 @@ public class MainActivity extends FragmentActivity
     public static Boolean isScamListEmpty() {
         return null == mScamList;
     }
-    public boolean isLoggedIn() {
-        return mLoggedIn;
-    }
-    public String getUserName() {
-        return mUserName;
-    }
-    public String getUserPass() {
-        return mUserPass;
-    }
-    public static String getServerUrl() {
-        return SERVER_URL;
-    }
     public static String getUserToken() {
         return mUserToken;
     }
-    public static int getScreenHeight() {
-        return screenHeight;
-    }
-    public static int getScreenWidth() {
-        return screenWidth;
-    }
 
-    /**
-     *
-     * @param newConfig
-     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -136,6 +112,7 @@ public class MainActivity extends FragmentActivity
         }
         confirmAuthentication();
     }
+
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
@@ -155,11 +132,6 @@ public class MainActivity extends FragmentActivity
 
     @Override
     protected void onDestroy() {
-        /*
-        Intent unregistrationIntent = new Intent("com.google.android.c2dm.intent.UNREGISTER");
-        unregistrationIntent.putExtra("app",PendingIntent.getBroadcast(getBaseContext(),0,new Intent(),0));
-        startService(unregistrationIntent);
-        */
         super.onDestroy();
     }
 
@@ -183,7 +155,6 @@ public class MainActivity extends FragmentActivity
             fragmentManager.popBackStackImmediate();
         }
         Fragment newFragment = null;
-        String fragmentId = null;
 
         if(mLoggedIn == false) {
             newFragment = new LoginFragment();
@@ -225,7 +196,6 @@ public class MainActivity extends FragmentActivity
 
 
     public void restoreActionBar() {
-        //ActionBar actionBar = getSupportActionBar();
         android.app.ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
@@ -253,9 +223,6 @@ public class MainActivity extends FragmentActivity
         FragmentManager fragmentManager =  getSupportFragmentManager();
 
         int backStackEntryCount = fragmentManager.getBackStackEntryCount();
-
-        //Log.d("MyApp", "backStackEntryCount: " + new Integer(backStackEntryCount).toString());
-        Log.d("MyApp", "backStackEntryCount: " + backStackEntryCount);
 
         if( backStackEntryCount == 0 ) {
             /*
@@ -405,7 +372,6 @@ public class MainActivity extends FragmentActivity
                 Toast toast = Toast.makeText(MainActivity.this,"SERVER CONNECTION ERROR!!!", Toast.LENGTH_LONG);
                 toast.show();
             }
-            //mNavigationDrawerFragment.getmDrawerListView().deferNotifyDataSetChanged();
         }
     }
 

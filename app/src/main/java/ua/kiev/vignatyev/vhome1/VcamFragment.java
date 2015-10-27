@@ -39,11 +39,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public VcamFragment() {
     }
 
-    /**
-     *
-     * @param userToken
-     * @return
-     */
     public static VcamFragment newInstance(String userToken) {
         VcamFragment fragment = new VcamFragment();
         Bundle args = new Bundle();
@@ -52,10 +47,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         return fragment;
     }
 
-    /**
-     *
-     * @param activity
-     */
     @Override
     public void onAttach(Activity activity) {
         pd = new ProgressDialog(activity);
@@ -66,10 +57,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         super.onAttach(activity);
     }
 
-    /**
-     *
-     * @param savedInstanceState
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,13 +66,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         }
     }
 
-    /**
-     *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,10 +77,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         return view;
     }
 
-    /**
-     *
-     * @param savedInstanceState
-     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -112,9 +88,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         }
     }
 
-    /**
-     *
-     */
     public void updateDisplay(){
         vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
         if(null != vcamArrayAdapter) {
@@ -126,20 +99,11 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         pd.hide();
     }
 
-    /**
-     *
-     * @param parent
-     * @param view
-     * @param position
-     * @param id
-     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //set arguments
-        Log.d("MyApp","VIEW Tag: " + view.getTag().toString());
         String steamURL = MainActivity.getVcam(Integer.parseInt(view.getTag().toString())).getVcamURL();
-        Log.d("MyApp", steamURL);
         Fragment newFragment = VcamPlayerFragment.newInstance(steamURL);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -149,14 +113,8 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         fragmentManager.executePendingTransactions();
     }
 
-    /**
-     *
-     * @param v
-     */
     @Override
     public void onArchButtonClick(View v) {
-        Log.d("myApp", "Archive vcam token: " + v.getTag());
-
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         Fragment newFragment = VarchFragment.newInstance(mUserToken, v.getTag().toString());
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -182,9 +140,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         getCustomerVCamListAsyncTask task = new getCustomerVCamListAsyncTask();
         task.execute(rp);
     }
-    /**
-     * Async taskfor Vcam List
-     */
     public class getCustomerVCamListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {

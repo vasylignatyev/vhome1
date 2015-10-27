@@ -80,13 +80,11 @@
             android:name=".MDActivity"
             android:label="@string/title_activity_touch_image_view" >
         </activity>
-        <activity
-            android:name=".MDFullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_mdfullscreen"
-            android:theme="@style/FullscreenTheme" >
+        <activity android:name=".MDActivityNew" >
         </activity>
-        <activity android:name=".validator.MDActivityNew" >
+        <activity
+            android:name=".PinchActivity"
+            android:label="@string/title_activity_pinch" >
         </activity>
     </application>
 

@@ -26,6 +26,8 @@ import java.util.List;
 
 import ua.kiev.vignatyev.vhome1.MDActivity;
 import ua.kiev.vignatyev.vhome1.MainActivity;
+import ua.kiev.vignatyev.vhome1.PinchActivity;
+import ua.kiev.vignatyev.vhome1.models.MDImage;
 
 /**
  * Created by vignatyev on 10.09.2015.
@@ -54,10 +56,7 @@ public class ImagePagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        //Log.d("MyApp", "ImageAdapter::getCount");
         return ((mImages == null) ? 0 : mImages.size());
-
-
     }
 
     @Override
@@ -81,11 +80,14 @@ public class ImagePagerAdapter extends PagerAdapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int iMotionDetect = Integer.parseInt(view.getTag().toString());
-                Log.d("MyApp", "ImageAdapter tag = " + Integer.toString(iMotionDetect));
+                MDImage mdImage = (MDImage) view.getTag();
+                //int iMotionDetect = Integer.parseInt(view.getTag().toString());
+                //Log.d("MyApp", "ImageAdapter tag = " + Integer.toString(iMotionDetect));
 
-                Intent intent = new Intent(mContext, MDActivity.class);
-                intent.putExtra(MDActivity.I_MOTION_DETECT, Integer.toString(iMotionDetect));
+                //Intent intent = new Intent(mContext, MDActivity.class);
+                Intent intent = new Intent(mContext, PinchActivity.class);
+                //intent.putExtra(MDActivity.I_MOTION_DETECT, Integer.toString(iMotionDetect));
+                intent.putExtra(PinchActivity.ARG_IMAGE_URL, mdImage.uri);
                 mContext.startActivity(intent);
             }
         });
@@ -95,7 +97,8 @@ public class ImagePagerAdapter extends PagerAdapter {
             final String uri = mImages.get(position);
             Bitmap bitmap = imageCache.get(uri);
             Log.d("MyApp", "URI: " + uri);
-            imageView.setTag(mIMotionDetect);
+            MDImage mdImage = new MDImage(mIMotionDetect, uri);
+            imageView.setTag(mdImage);
             if(bitmap != null){
                 Log.d("MyApp", "Loading image from cahch: " + uri);
                 imageView.setImageBitmap(bitmap);
