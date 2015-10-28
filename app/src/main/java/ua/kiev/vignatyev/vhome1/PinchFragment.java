@@ -25,21 +25,13 @@ import java.io.InputStream;
 import java.net.URL;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PinchFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PinchFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class PinchFragment extends Fragment {
     /**
      * PRIVATE VARS
      */
     private String mImageUrl;
-    private ImageView mPinchView;
     private TouchImageView mTouchImageView;
+    private OnFragmentInteractionListener mListener;
 
     public static PinchFragment newInstance(String imageUrl) {
         PinchFragment fragment = new PinchFragment();
@@ -55,74 +47,72 @@ public class PinchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mImageUrl = MainActivity.SERVER_URL + getArguments().getString(PinchActivity.ARG_IMAGE_URL);
-
-
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_pinch, container, false);
-        //mPinchView = (ImageView) v.findViewById(R.id.ivPinchView);
+        mTouchImageView = (TouchImageView) v.findViewById(R.id.tvImage);
 
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        if (mListener != null) {
+            mImageUrl = MainActivity.SERVER_URL + mListener.getImageUrl();
+            if(mImageUrl != null ) {
+                Log.d("MyApp", "PinchFragment uri: " + mImageUrl);
 
-        mTouchImageView = new TouchImageView(getActivity().getApplicationContext());
-        mTouchImageView.setTag(mImageUrl);
+                RequestQueue queue = Volley.newRequestQueue(getActivity());
 
-        //container.addView(mTouchImageView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        ((ViewGroup) v).addView(mTouchImageView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-        Log.d("MyApp", "PinchFragment uri: " + mImageUrl);
-
-        ImageRequest imageRequest = new ImageRequest( mImageUrl,
-                new Response.Listener<Bitmap>() {
-                    @Override
-                    public void onResponse(Bitmap bitmap) {
-                        mTouchImageView.setImageBitmap(bitmap);
-                    }
-                }, 0,0,
-                Bitmap.Config.ARGB_8888,
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.d("MyApp",volleyError.getMessage());
-                    }
-                }
-        );
-        queue.add(imageRequest);
-
+                ImageRequest imageRequest = new ImageRequest(mImageUrl,
+                        new Response.Listener<Bitmap>() {
+                            @Override
+                            public void onResponse(Bitmap bitmap) {
+                                mTouchImageView.setImageBitmap(bitmap);
+                            }
+                        }, 0, 0,
+                        Bitmap.Config.ARGB_8888,
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                Log.d("MyApp", volleyError.getMessage());
+                            }
+                        }
+                );
+                queue.add(imageRequest);
+            }
+        }
         return v;
     }
 
     @Override
     public void onDestroyView() {
-        ViewGroup v = (ViewGroup) getView();
-
-        ImageView imageView = (ImageView) v.getChildAt(0);
-        if(imageView != null) {
-            Drawable drawable = imageView.getDrawable();
-            if (drawable instanceof BitmapDrawable) {
-                Log.d("MyApp", "Recycling image: " + imageView.getTag());
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-                Bitmap bitmap = bitmapDrawable.getBitmap();
-                bitmap.recycle();
-            }
+        Drawable drawable = mTouchImageView.getDrawable();
+        if (drawable instanceof BitmapDrawable) {
+            Log.d("MyApp", "Recycling image");
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            bitmap.recycle();
         }
-        //v.removeView((ImageView) object);
         super.onDestroyView();
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-     }
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
 
     @Override
     public void onDetach() {
         super.onDetach();
      }
+
+    public interface OnFragmentInteractionListener {
+        String getImageUrl();
+    }
+
 }
