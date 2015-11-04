@@ -86,6 +86,10 @@
             android:name=".PinchActivity"
             android:label="@string/title_activity_pinch" >
         </activity>
+        <activity
+            android:name=".VarchPlayerActivity"
+            android:label="@string/title_activity_varch_player" >
+        </activity>
     </application>
 
 </manifest>

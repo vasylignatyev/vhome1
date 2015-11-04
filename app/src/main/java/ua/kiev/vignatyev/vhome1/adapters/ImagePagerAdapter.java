@@ -24,9 +24,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import ua.kiev.vignatyev.vhome1.MDActivity;
 import ua.kiev.vignatyev.vhome1.MainActivity;
 import ua.kiev.vignatyev.vhome1.PinchActivity;
+import ua.kiev.vignatyev.vhome1.R;
 import ua.kiev.vignatyev.vhome1.models.MDImage;
 
 /**
@@ -116,7 +116,8 @@ public class ImagePagerAdapter extends PagerAdapter {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError volleyError) {
-                                Log.d("MyApp",volleyError.getMessage());
+                                volleyError.printStackTrace();
+                                imageView.setImageBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.image_unavailable));
                             }
                         }
                 );

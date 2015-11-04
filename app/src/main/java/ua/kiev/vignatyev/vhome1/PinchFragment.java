@@ -108,6 +108,7 @@ public class PinchFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        mListener = null;
         super.onDetach();
      }
 

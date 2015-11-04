@@ -125,7 +125,7 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
         btnDate = (Button) view.findViewById(R.id.btDate);
         btnDate.setOnClickListener(this);
         setDate();
-        getCustomerVArchList();
+        getCustomerVArchTable();
         return view;
     }
 
@@ -182,7 +182,7 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
                 mMonth = month;
                 mDay = day;
                 setDate();
-                getCustomerVArchList();
+                getCustomerVArchTable();
             }
         };
         DatePickerFragment datePickerFragment = DatePickerFragment.newInstance( mYear, mMonth, mDay);
@@ -220,8 +220,8 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
     /**
      * REST Request for Varch List
      */
-    public void getCustomerVArchList() {
-        Log.d("MyApp", "getCustomerVArchList token: " + mUserToken);
+    public void getCustomerVArchTable() {
+        Log.d("MyApp", "getCustomerVArchTable token: " + mUserToken);
         Calendar c = Calendar.getInstance();
         c.set(mYear, mMonth, mDay, 0, 0, 0);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -230,7 +230,7 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
         //************************
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
-        rp.setParam("functionName", "getCustomerVArchList");
+        rp.setParam("functionName", "getCustomerVArchTable");
         rp.setParam("vcam_token", mVcamToken);
         rp.setParam("start", "0");
         rp.setParam("length", "300");
@@ -238,14 +238,14 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
         rp.setParam("fromDate", cDate + " 00:00:00" );
         rp.setParam("tillDate", cDate + " 23:59:59" );
 
-        getCustomerVArchListAsyncTask task = new getCustomerVArchListAsyncTask();
+        getCustomerVArchTableAsyncTask task = new getCustomerVArchTableAsyncTask();
         task.execute(rp);
     }
 
     /**
      * Async taskfor Varch List
      */
-    public class getCustomerVArchListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+    public class getCustomerVArchTableAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
             String replay = HTTPManager.getData(params[0]);
@@ -253,7 +253,7 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
         }
         @Override
         protected void onPostExecute(String s) {
-            Log.d("MyApp","getCustomerVArchList Replay: " + s);
+            Log.d("MyApp","getCustomerVArchTable Replay: " + s);
             mVarchList = VarchParser.parseFeed(s);
             updateDisplay();
         }

@@ -57,10 +57,6 @@ public class VarchPlayerFragment extends Fragment {
     public VarchPlayerFragment() {
     }
 
-    /**
-     *
-     * @param activity
-     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -71,10 +67,6 @@ public class VarchPlayerFragment extends Fragment {
         mMainActivity = (MainActivity) activity;
     }
 
-    /**
-     *
-     * @param savedInstanceState
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +92,7 @@ public class VarchPlayerFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_varch_player, container, false);
         //
         videoView = (VideoView) view.findViewById(R.id.varch_player_view);
-        MediaController mediaController = new MediaController(getActivity());
+        //MediaController mediaController = new MediaController(getActivity());
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
         {
@@ -128,7 +120,7 @@ public class VarchPlayerFragment extends Fragment {
         Log.d("MyApp", "width = " + width);
         videoView.setMinimumWidth(width);
         videoView.setMinimumHeight(height);
-        videoView.setMediaController(mediaController);
+        //videoView.setMediaController(mediaController);
         //Убираем все ненужное
         android.app.ActionBar actionBar = mMainActivity.getActionBar();
         mOldOptions = mMainActivity.getWindow().getDecorView().getSystemUiVisibility();
