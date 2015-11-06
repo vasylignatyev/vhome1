@@ -103,6 +103,7 @@ public class ImagePagerAdapter extends PagerAdapter {
                 Log.d("MyApp", "Loading image from cahch: " + uri);
                 imageView.setImageBitmap(bitmap);
             } else {
+                Log.d("MyApp", "Loading image from server: " + MainActivity.SERVER_URL + uri);
                 ImageRequest imageRequest = new ImageRequest( MainActivity.SERVER_URL + uri,
                         new Response.Listener<Bitmap>() {
                             @Override

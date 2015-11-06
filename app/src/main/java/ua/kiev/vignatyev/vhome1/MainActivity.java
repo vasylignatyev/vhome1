@@ -170,7 +170,7 @@ public class MainActivity extends FragmentActivity
                     newFragment = MDFragment.newInstance(mUserToken);
                     break;
                 case 3:
-                    newFragment = SharedMotionDetectFragment.newInstance(mUserToken);
+                    newFragment = SharedMDFragment.newInstance(mUserToken);
                     break;
                 case 4:
                     logout();

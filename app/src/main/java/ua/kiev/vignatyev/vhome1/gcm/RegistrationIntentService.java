@@ -123,5 +123,34 @@ public class RegistrationIntentService extends IntentService {
             Log.d("MyApp","setGcmRegistrationToken :" + s );
          }
     }
+    /**
+     * REST Request for Vcam List
+     */
+    public void unsetGcmRegistrationToken(String token) {
+        //pd.show();
+        //************************
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        rp.setMethod("GET");
+        rp.setParam("functionName", "unsetGcmRegistrationToken");
+        rp.setParam("customer_token", MainActivity.getUserToken());
+        rp.setParam("registration_token", token);
+
+        unsetGcmRegistrationTokenAsyncTask task = new unsetGcmRegistrationTokenAsyncTask();
+        task.execute(rp);
+    }
+    /**
+     * Async taskfor Vcam List
+     */
+    public class unsetGcmRegistrationTokenAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+        @Override
+        protected String doInBackground(RequestPackage... params) {
+            String replay = HTTPManager.getData(params[0]);
+            return replay;
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d("MyApp","unsetGcmRegistrationTokenAsyncTask :" + s );
+        }
+    }
 
 }

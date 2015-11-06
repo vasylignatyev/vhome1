@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 
 public class MotionDetectParserNew {
-    public static ArrayList<MotionDetectNew> parseFeed(JSONArray motionArray) {
-        final ArrayList<MotionDetectNew> motionList = new ArrayList<>();
+    public static ArrayList<MotionDetectNew> parseFeed(ArrayList<MotionDetectNew> motionList ,
+                                                       JSONArray motionArray) {
+        if(motionList == null ) {
+            motionList = new ArrayList<>();
+        }
         try {
             Log.d("MyApp", "Parsed MotionDetect: " + motionArray.length());
             for (int i = 0; i < motionArray.length(); i++) {

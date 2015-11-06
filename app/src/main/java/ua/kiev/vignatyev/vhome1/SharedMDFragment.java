@@ -23,10 +23,11 @@ import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 
-public class SharedMotionDetectFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class SharedMDFragment extends Fragment implements AbsListView.OnItemClickListener {
     /**
      * Static VARS
      */
+    private static int loadStep = 10;
     private static final String ARG_USER_TOKEN = "user_token";
     private static final String TAG = "MDFragment";
     private static ArrayList<MotionDetectNew> mMotionDetectList = null;
@@ -38,6 +39,7 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
     private MDArrayAdapter motionDetectAdapter;
     private AbsListView mListView;
     private ProgressDialog pd;
+    private int mMdLoadedItems = 0;
     /**
      * GETTERS & SETTERS
      */
@@ -60,8 +62,8 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
      * @param userToken
      * @return
      */
-    public static SharedMotionDetectFragment newInstance(String userToken) {
-        SharedMotionDetectFragment fragment = new SharedMotionDetectFragment();
+    public static SharedMDFragment newInstance(String userToken) {
+        SharedMDFragment fragment = new SharedMDFragment();
         Bundle args = new Bundle();
         args.putString(ARG_USER_TOKEN, userToken);
         fragment.setArguments(args);
@@ -71,7 +73,7 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
     /**
      *
      */
-    public SharedMotionDetectFragment() {
+    public SharedMDFragment() {
     }
 
     @Override
@@ -92,6 +94,23 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
         mListView.setOnItemClickListener(this);
 
         mListView.setEmptyView(view.findViewById(android.R.id.empty));
+
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                int lastInScreen = firstVisibleItem + visibleItemCount;
+                if (lastInScreen == totalItemCount) {
+                    getSharedMotionDetectListByCustomer();
+                }
+            }
+        });
 
         getSharedMotionDetectListByCustomer();
 
@@ -117,11 +136,13 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
     }
     public void updateDisplay(){
         Log.d("MyApp", "updateDisplay");
-        motionDetectAdapter = new MDArrayAdapter(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
         //**********************
         // Set the adapter
         if(null != mMotionDetectList) {
-            mListView.setAdapter(motionDetectAdapter);
+            if( motionDetectAdapter == null ) {
+                motionDetectAdapter = new MDArrayAdapter(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
+                mListView.setAdapter(motionDetectAdapter);
+            }
         }
     }
 
@@ -134,6 +155,8 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
         rp.setMethod("GET");
         rp.setParam("functionName", "getSharedMotionDetectListByCustomer");
         rp.setParam("user_token", mUserToken);
+        rp.setParam("start", Integer.toString(mMdLoadedItems));
+        rp.setParam("length", Integer.toString(loadStep));
         getSharedMotionDetectListByCustomerAsyncTask task = new getSharedMotionDetectListByCustomerAsyncTask();
         task.execute(rp);
     }
@@ -145,31 +168,17 @@ public class SharedMotionDetectFragment extends Fragment implements AbsListView.
         }
         @Override
         protected void onPostExecute(String s) {
+            if(s == null)
+                return;
             Log.d("MyApp", "getMotionDetectListByCustomer replay" + ": " + s.length());
-            JSONObject mdObject = null;
+            JSONObject mdObject;
             try {
+                mMdLoadedItems += loadStep;
                 mdObject = new JSONObject(s);
-
-                if(mdObject.has("cam_name")) {
-                    //mCamName = mdObject.getString("cam_name");
-                    //tvCamName.setText(mCamName);
-                }
-                if(mdObject.has("cam_token")) {
-                    //mCamToken = mdObject.getString("cam_token");
-                }
-                if(mdObject.has("cam_Location")) {
-                    //mCamLocation = mdObject.getString("cam_Location");
-
-                }
-                if(mdObject.has("amount")) {
-                    //mMDAmount = mdObject.getInt("amount");
-                    //tvMDAmount.setText( Integer.toString(mMDAmount) );
-                }
                 if(mdObject.has("md_list")) {
                     JSONArray mdArray = mdObject.getJSONArray("md_list");
-                    mMotionDetectList = MotionDetectParserNew.parseFeed(mdArray);
+                    mMotionDetectList = MotionDetectParserNew.parseFeed(mMotionDetectList, mdArray);
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
