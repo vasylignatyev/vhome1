@@ -273,7 +273,7 @@ public class MainActivity extends FragmentActivity
         mLoggedIn = true;
         mUserName = user_name;
         mUserPass = user_pass;
-        /* */
+        /*
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -291,6 +291,7 @@ public class MainActivity extends FragmentActivity
                 }
             }
         };
+        */
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
