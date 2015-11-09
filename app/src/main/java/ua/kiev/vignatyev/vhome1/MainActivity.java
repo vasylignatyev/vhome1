@@ -187,11 +187,13 @@ public class MainActivity extends FragmentActivity
     public void logout() {
         mVcamList = null;
         mScamList = null;
+        mLoggedIn = false;
         sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.remove("userPass");
         editor.apply();
-        finish();
+        onNavigationDrawerItemSelected(0);
+        //finish();
     }
 
 
