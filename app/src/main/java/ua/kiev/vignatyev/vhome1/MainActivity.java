@@ -1,9 +1,11 @@
 package ua.kiev.vignatyev.vhome1;
 
 import android.app.DialogFragment;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -12,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -33,8 +36,6 @@ import ua.kiev.vignatyev.vhome1.gcm.RegistrationIntentService;
 import ua.kiev.vignatyev.vhome1.models.Credentials;
 import ua.kiev.vignatyev.vhome1.models.Varch;
 import ua.kiev.vignatyev.vhome1.models.Vcam;
-
-
 
 public class MainActivity extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -59,7 +60,9 @@ public class MainActivity extends FragmentActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
     private String mUserName, mUserPass;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    private String mGcmToken = null;
+    //private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     /**
      * GETTERS AND SETTERS
@@ -96,10 +99,11 @@ public class MainActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
 
         sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         if(savedInstanceState == null) {
@@ -112,6 +116,16 @@ public class MainActivity extends FragmentActivity
         }
         confirmAuthentication();
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            mGcmToken = intent.getStringExtra(RegistrationIntentService.GCM_TOKEN);
+
+            Log.d("MyApp", "MainActivity::mMessageReceiver action =" + action + ", mGcmToken =" + mGcmToken);
+         }
+    };
 
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
@@ -193,6 +207,11 @@ public class MainActivity extends FragmentActivity
         editor.remove("userPass");
         editor.apply();
         onNavigationDrawerItemSelected(0);
+        unsetGcmRegistrationToken();
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+
         //finish();
     }
 
@@ -375,6 +394,37 @@ public class MainActivity extends FragmentActivity
                 Toast toast = Toast.makeText(MainActivity.this,"SERVER CONNECTION ERROR!!!", Toast.LENGTH_LONG);
                 toast.show();
             }
+        }
+    }
+    /**
+     * REST Request for Vcam List
+     */
+    public void unsetGcmRegistrationToken() {
+        //pd.show();
+        //************************
+        if((mUserToken == null) || (mGcmToken==null) )
+            return;
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        rp.setMethod("GET");
+        rp.setParam("functionName", "unsetGcmRegistrationToken");
+        rp.setParam("customer_token", mUserToken );
+        rp.setParam("registration_token", mGcmToken);
+
+        unsetGcmRegistrationTokenAsyncTask task = new unsetGcmRegistrationTokenAsyncTask();
+        task.execute(rp);
+    }
+    /**
+     * Async taskfor Vcam List
+     */
+    public class unsetGcmRegistrationTokenAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+        @Override
+        protected String doInBackground(RequestPackage... params) {
+            String replay = HTTPManager.getData(params[0]);
+            return replay;
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d("MyApp","unsetGcmRegistrationTokenAsyncTask :" + s );
         }
     }
 

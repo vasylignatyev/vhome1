@@ -25,6 +25,8 @@ import ua.kiev.vignatyev.vhome1.RequestPackage;
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
+    public static final String GCM_TOKEN = "gcmToken";
+
     private static final String[] TOPICS = {"global"};
 
     public RegistrationIntentService() {
@@ -34,14 +36,14 @@ public class RegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+        String token = "";
         try {
             // [START register_for_gcm]
             // Initially this call goes out to the network to retrieve the token, subsequent calls
             // are local.
             // [START get_token]
             InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken(getString(R.string.senderID),
+            token = instanceID.getToken(getString(R.string.senderID),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
             Log.d("MyApp", "GCM Registration Token: " + token);
@@ -65,6 +67,8 @@ public class RegistrationIntentService extends IntentService {
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(QuickstartPreferences.REGISTRATION_COMPLETE);
+        registrationComplete.putExtra(GCM_TOKEN, token);
+
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
@@ -123,34 +127,4 @@ public class RegistrationIntentService extends IntentService {
             Log.d("MyApp","setGcmRegistrationToken :" + s );
          }
     }
-    /**
-     * REST Request for Vcam List
-     */
-    public void unsetGcmRegistrationToken(String token) {
-        //pd.show();
-        //************************
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
-        rp.setMethod("GET");
-        rp.setParam("functionName", "unsetGcmRegistrationToken");
-        rp.setParam("customer_token", MainActivity.getUserToken());
-        rp.setParam("registration_token", token);
-
-        unsetGcmRegistrationTokenAsyncTask task = new unsetGcmRegistrationTokenAsyncTask();
-        task.execute(rp);
-    }
-    /**
-     * Async taskfor Vcam List
-     */
-    public class unsetGcmRegistrationTokenAsyncTask extends AsyncTask<RequestPackage, Void, String> {
-        @Override
-        protected String doInBackground(RequestPackage... params) {
-            String replay = HTTPManager.getData(params[0]);
-            return replay;
-        }
-        @Override
-        protected void onPostExecute(String s) {
-            Log.d("MyApp","unsetGcmRegistrationTokenAsyncTask :" + s );
-        }
-    }
-
 }
