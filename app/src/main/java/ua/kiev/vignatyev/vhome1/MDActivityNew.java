@@ -101,9 +101,9 @@ public class MDActivityNew extends Activity implements AbsListView.OnItemClickLi
      */
     private void getMotionDetectListByICustomerVcam(int iCustomerVcam) {
         pd.show();
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
-        rp.setParam("functionName", "getMotionDetectListByICustomerVcam");
+        rp.setParam("functionName", "getMotionDetectList");
         rp.setParam("i_customer_vcam", Integer.toString(iCustomerVcam) );
         getMotionDetectListByICustomerVcamAsyncTask task = new getMotionDetectListByICustomerVcamAsyncTask();
         task.execute(rp);

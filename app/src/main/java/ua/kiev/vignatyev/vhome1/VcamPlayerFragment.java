@@ -63,9 +63,9 @@ public class VcamPlayerFragment extends Fragment {
         dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
-        Log.d("MyApp", "height = " + height);
+        //Log.d("MyApp", "height = " + height);
         int width = dm.widthPixels;
-        Log.d("MyApp", "width = " + width);
+        //Log.d("MyApp", "width = " + width);
         video_player_view.setMinimumWidth(width);
         video_player_view.setMinimumHeight(height);
         video_player_view.setMediaController(media_Controller);
@@ -89,8 +89,6 @@ public class VcamPlayerFragment extends Fragment {
         if (getArguments() != null) {
             mStreamURL = getArguments().getString(VCAM_URL);
             mVcam = MainActivity.getVcam(mVcamPosition);
-
-            //mStreamURL = "http://" + mVcam.URL + ":" + mVcam.HLS + "/myapp/"+ mVcam.TOKEN + "/index.m3u8";
         }
     }
 

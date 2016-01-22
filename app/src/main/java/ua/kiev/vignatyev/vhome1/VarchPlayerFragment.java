@@ -8,7 +8,7 @@ import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -92,7 +92,7 @@ public class VarchPlayerFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_varch_player, container, false);
         //
         videoView = (VideoView) view.findViewById(R.id.varch_player_view);
-        //MediaController mediaController = new MediaController(getActivity());
+        MediaController mediaController = new MediaController(getActivity());
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
         {
@@ -120,7 +120,7 @@ public class VarchPlayerFragment extends Fragment {
         Log.d("MyApp", "width = " + width);
         videoView.setMinimumWidth(width);
         videoView.setMinimumHeight(height);
-        //videoView.setMediaController(mediaController);
+        videoView.setMediaController(mediaController);
         //Убираем все ненужное
         android.app.ActionBar actionBar = mMainActivity.getActionBar();
         mOldOptions = mMainActivity.getWindow().getDecorView().getSystemUiVisibility();
@@ -161,7 +161,7 @@ public class VarchPlayerFragment extends Fragment {
      *
      */
     public interface OnVarchPlayerInteractionListener {
-        public void getNextVarchPart(Varch varch);
+        void getNextVarchPart(Varch varch);
     }
 
     /**

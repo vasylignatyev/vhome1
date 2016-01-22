@@ -125,8 +125,8 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
      *
      */
     public interface OnLoginFragmentInteractionListener {
-        public void loggedIn(String user_token, String user_name, String user_pass);
-        public Credentials getCredentials();
+        void loggedIn(String user_token, String user_name, String user_pass);
+        Credentials getCredentials();
     }
 
     /**
@@ -137,17 +137,19 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.btnLogin :
-                RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "/ajax/createToken.php");
+                //RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "/ajax/createToken.php");
+                RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "/ajax/ajax.php");
                 rp.setMethod("GET");
                 mUserName = etEmail.getText().toString();
                 mUserPass = etPassword.getText().toString();
-                rp.setParam("userEmail", mUserName);
-                rp.setParam("userPassword", mUserPass);
+                rp.setParam("functionName", "create_token");
+                rp.setParam("user_email", mUserName);
+                rp.setParam("user_pass", mUserPass);
                 GetToken task = new GetToken();
                 task.execute(rp);
                 break;
             case  R.id.btnRegisterRecovery :
-                Fragment newFragment = (Fragment) RegistrationFragment.newInstance(etEmail.getText().toString());
+                Fragment newFragment = RegistrationFragment.newInstance(etEmail.getText().toString());
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.container, newFragment).commit();
                 break;
@@ -188,4 +190,6 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             //mNavigationDrawerFragment.getmDrawerListView().deferNotifyDataSetChanged();
         }
     }
+
+
 }

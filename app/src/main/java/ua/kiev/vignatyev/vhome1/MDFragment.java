@@ -154,7 +154,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
      */
     private void getMotionDetectListByCustomer() {
         pd.show();
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getMotionDetectListByCustomer");
         rp.setParam("user_token", mUserToken);

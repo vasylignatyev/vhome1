@@ -355,9 +355,9 @@ public class MainActivity extends FragmentActivity
      */
     private void confirmAuthentication() {
 
-        RequestPackage rp = new RequestPackage(getString(R.string.SERVER_URL) + "/php/ajax.php");
+        RequestPackage rp = new RequestPackage(getString(R.string.SERVER_URL) + "/ajax/ajax.php");
         rp.setMethod("GET");
-        rp.setParam("functionName", "confirmAuthentication");
+        rp.setParam("functionName", "create_token");
         rp.setParam("user_email", mUserName);
         rp.setParam("user_pass", mUserPass);
         confirmAuthenticationAsyncTask task = new confirmAuthenticationAsyncTask();
@@ -376,7 +376,9 @@ public class MainActivity extends FragmentActivity
         @Override
         protected void onPostExecute(String s) {
             Log.d("MyApp","confirmAuthenticationAsync replay" + ": " + s);
-
+            if( s == null ) {
+                return;
+            }
             try {
                 JSONObject obj = new JSONObject(s);
                 Log.d("MyApp", obj.toString());
@@ -404,7 +406,7 @@ public class MainActivity extends FragmentActivity
         //************************
         if((mUserToken == null) || (mGcmToken==null) )
             return;
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "unsetGcmRegistrationToken");
         rp.setParam("customer_token", mUserToken );

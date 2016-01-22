@@ -128,7 +128,7 @@ public class MDActivity extends Activity {
     public void getMD_URL_List() {
 
         //************************
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getMD_URL_List");
         rp.setParam("i_motion_detect", mIMotionDetect);
@@ -148,6 +148,8 @@ public class MDActivity extends Activity {
         @Override
         protected void onPostExecute(String s) {
             Log.d("MyApp", "getMD_URL_List:" + s);
+            if(s == null)
+                return;
             try {
                 JSONArray imageArray = new JSONArray(s);
                 mImagesUrlList.clear();
