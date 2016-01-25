@@ -2,7 +2,6 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,12 +29,14 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
      */
     private static int loadStep = 10;
     private static final String ARG_USER_TOKEN = "user_token";
+    private static final String ARG_OFFSET = "offset";
     private static final String TAG = "MDFragment";
     private static ArrayList<MotionDetectNew> mMotionDetectList = null;
     /**
      * VARS
      */
     private String mUserToken;
+    private int mOffset;
     private MainActivity mMainActivity;
     private MDArrayAdapter motionDetectAdapter;
     private AbsListView mListView;
@@ -63,10 +64,11 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
      * @param userToken
      * @return
      */
-    public static MDFragment newInstance(String userToken) {
+    public static MDFragment newInstance(String userToken, int offset) {
         MDFragment fragment = new MDFragment();
         Bundle args = new Bundle();
         args.putString(ARG_USER_TOKEN, userToken);
+        args.putInt(ARG_OFFSET, offset);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,6 +85,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
 
         if (getArguments() != null) {
             mUserToken = getArguments().getString(ARG_USER_TOKEN);
+            mOffset = getArguments().getInt(ARG_OFFSET);
         }
     }
 
@@ -95,7 +98,6 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         mListView.setOnItemClickListener(this);
 
         mListView.setEmptyView(view.findViewById(android.R.id.empty));
-
 
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -156,14 +158,14 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         pd.show();
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
-        rp.setParam("functionName", "getMotionDetectListByCustomer");
+        rp.setParam("functionName", "getMotionDetectList");
         rp.setParam("user_token", mUserToken);
         rp.setParam("start", Integer.toString(mMdLoadedItems));
         rp.setParam("length", Integer.toString(loadStep));
-        getMotionDetectListByCustomerAsyncTask task = new getMotionDetectListByCustomerAsyncTask();
+        getMotionDetectListAsyncTask task = new getMotionDetectListAsyncTask();
         task.execute(rp);
     }
-    private class getMotionDetectListByCustomerAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+    private class getMotionDetectListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
             String replay = HTTPManager.getData(params[0]);
@@ -173,7 +175,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         protected void onPostExecute(String s) {
             if(s == null)
                 return;
-            Log.d("MyApp", "getMotionDetectListByCustomer replay" + ": " + s.length());
+            //Log.d("MyApp", "getMotionDetectListByCustomer replay" + ": " + s.length());
             JSONObject mdObject;
             try {
                 mMdLoadedItems += loadStep;

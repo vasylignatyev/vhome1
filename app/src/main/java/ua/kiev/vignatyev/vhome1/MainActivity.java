@@ -181,7 +181,7 @@ public class MainActivity extends FragmentActivity
                     newFragment = ScamFragment.newInstance(mUserToken);
                     break;
                 case 2:
-                    newFragment = MDFragment.newInstance(mUserToken);
+                    newFragment = MDFragment.newInstance(mUserToken, 0);
                     break;
                 case 3:
                     newFragment = SharedMDFragment.newInstance(mUserToken);
