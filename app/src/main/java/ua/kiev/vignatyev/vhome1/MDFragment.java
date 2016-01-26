@@ -47,7 +47,6 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
      */
 
     /**
-     *
      * @param activity
      */
     @Override
@@ -60,7 +59,6 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
     }
 
     /**
-     *
      * @param userToken
      * @return
      */
@@ -92,7 +90,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_alarm, container, false);
+        View view = inflater.inflate( R.layout.fragment_alarm, container, false);
 
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         mListView.setOnItemClickListener(this);
@@ -123,7 +121,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
 
     @Override
     public void onDestroyView() {
-        ((ArrayAdapter)mListView.getAdapter()).clear();
+        ((ArrayAdapter) mListView.getAdapter()).clear();
         mMotionDetectList = null;
         super.onDestroyView();
         Log.d("MyApp", "MDFragment::onDestroyView");
@@ -139,12 +137,12 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         Log.d("MyApp", "Click Motion Detact Item: " + view.getTag().toString());
     }
 
-    public void updateDisplay(){
+    public void updateDisplay() {
         Log.d("MyApp", "updateDisplay");
         //**********************
         // Set the adapter
-        if(null != mMotionDetectList) {
-            if( motionDetectAdapter == null ) {
+        if (null != mMotionDetectList) {
+            if (motionDetectAdapter == null) {
                 motionDetectAdapter = new MDArrayAdapter(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
                 mListView.setAdapter(motionDetectAdapter);
             }
@@ -165,7 +163,53 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         getMotionDetectListAsyncTask task = new getMotionDetectListAsyncTask();
         task.execute(rp);
     }
+
     private class getMotionDetectListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+        @Override
+        protected String doInBackground(RequestPackage... params) {
+            String replay = HTTPManager.getData(params[0]);
+            return replay;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s == null)
+                return;
+            //Log.d("MyApp", "getMotionDetectListByCustomer replay" + ": " + s.length());
+            JSONObject mdObject;
+            try {
+                mMdLoadedItems += loadStep;
+                mdObject = new JSONObject(s);
+                if (mdObject.has("md_list")) {
+                    JSONArray mdArray = mdObject.getJSONArray("md_list");
+                    mMotionDetectList = MotionDetectParserNew.parseFeed(mMotionDetectList, mdArray);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                pd.hide();
+                updateDisplay();
+            }
+        }
+    }
+
+    /**
+     * REST Request for genMotionDetectPopup
+     */
+
+    public void genMotionDetectPopup() {
+        //pd.show();
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
+        rp.setMethod("GET");
+        rp.setParam("functionName", "genMotionDetectPopup");
+        rp.setParam("user_token", mUserToken);
+        rp.setParam("start", Integer.toString(mMdLoadedItems));
+        rp.setParam("length", Integer.toString(loadStep));
+        genMotionDetectPopupAsyncTask task = new genMotionDetectPopupAsyncTask();
+        task.execute(rp);
+    }
+
+    private class genMotionDetectPopupAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
             String replay = HTTPManager.getData(params[0]);
@@ -181,14 +225,14 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
                 mMdLoadedItems += loadStep;
                 mdObject = new JSONObject(s);
                 if(mdObject.has("md_list")) {
-                    JSONArray mdArray = mdObject.getJSONArray("md_list");
-                    mMotionDetectList = MotionDetectParserNew.parseFeed(mMotionDetectList, mdArray);
+                    //JSONArray mdArray = mdObject.getJSONArray("md_list");
+                    //mMotionDetectList = MotionDetectParserNew.parseFeed(mMotionDetectList, mdArray);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
-                pd.hide();
-                updateDisplay();
+                //pd.hide();
+                //updateDisplay();
             }
         }
     }
