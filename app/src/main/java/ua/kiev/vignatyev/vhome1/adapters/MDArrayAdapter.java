@@ -3,6 +3,7 @@ package ua.kiev.vignatyev.vhome1.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.LruCache;
@@ -17,6 +18,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
 import java.util.List;
+
+import ua.kiev.vignatyev.vhome1.MDFragment;
+import ua.kiev.vignatyev.vhome1.R;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 
 /**
@@ -28,12 +32,27 @@ public class MDArrayAdapter extends ArrayAdapter<MotionDetectNew> {
     private LruCache< String, Bitmap > imageCache;
     private RequestQueue queue;
     private ImagePagerAdapter imagePagerAdapter;
+
+    private OnMDArrayAdapterListener mListener;
+
     //private ViewPager viewPager;
 
 
-    public MDArrayAdapter(Context context, int resource, List<MotionDetectNew> objects) {
-        super(context, resource, objects);
+    public MDArrayAdapter(Fragment fragment, int resource, List<MotionDetectNew> objects) {
+        super( fragment.getContext(), resource, objects);
+
+        Context context = fragment.getContext();
+
+        try {
+            mListener = (OnMDArrayAdapterListener) fragment;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(fragment.toString()
+                    + " must implement OnMDArrayAdapterListener");
+        }
+
+
         this.context = context;
+
         this.mMotionDetectList = objects;
 
         final int maxMemory = (int)(Runtime.getRuntime().maxMemory() / 1024);
@@ -76,7 +95,11 @@ public class MDArrayAdapter extends ArrayAdapter<MotionDetectNew> {
         btFindInArchive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("MyApp", "Find In Archive Click " + view.getTag().toString());
+                int iMotionDetect = Integer.parseInt(view.getTag().toString());
+
+                Log.d("MyApp", "Find In Archive Click " + iMotionDetect);
+
+                mListener.genMotionDetectPopup(iMotionDetect);
 
             }
         });
@@ -102,6 +125,9 @@ public class MDArrayAdapter extends ArrayAdapter<MotionDetectNew> {
             }
         }
         super.clear();
+    }
+    public interface OnMDArrayAdapterListener {
+        void genMotionDetectPopup(int iMotionDetect);
     }
 
 }

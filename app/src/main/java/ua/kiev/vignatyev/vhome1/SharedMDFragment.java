@@ -140,7 +140,7 @@ public class SharedMDFragment extends Fragment implements AbsListView.OnItemClic
         // Set the adapter
         if(null != mMotionDetectList) {
             if( motionDetectAdapter == null ) {
-                motionDetectAdapter = new MDArrayAdapter(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
+                motionDetectAdapter = new MDArrayAdapter(this, R.layout.item_motion_detect, mMotionDetectList);
                 mListView.setAdapter(motionDetectAdapter);
             }
         }

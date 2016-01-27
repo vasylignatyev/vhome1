@@ -23,7 +23,7 @@ import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 
-public class MDFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class MDFragment extends Fragment implements AbsListView.OnItemClickListener, MDArrayAdapter.OnMDArrayAdapterListener {
     /**
      * Static VARS
      */
@@ -143,7 +143,8 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         // Set the adapter
         if (null != mMotionDetectList) {
             if (motionDetectAdapter == null) {
-                motionDetectAdapter = new MDArrayAdapter(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
+                //motionDetectAdapter = new MDArrayAdapter(getActivity(), R.layout.item_motion_detect, mMotionDetectList);
+                motionDetectAdapter = new MDArrayAdapter( this , R.layout.item_motion_detect, mMotionDetectList);
                 mListView.setAdapter(motionDetectAdapter);
             }
         }
@@ -163,7 +164,6 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         getMotionDetectListAsyncTask task = new getMotionDetectListAsyncTask();
         task.execute(rp);
     }
-
     private class getMotionDetectListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
@@ -197,14 +197,14 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
      * REST Request for genMotionDetectPopup
      */
 
-    public void genMotionDetectPopup() {
+    @Override
+    public void genMotionDetectPopup(int iMotionDetect) {
         //pd.show();
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "genMotionDetectPopup");
-        rp.setParam("user_token", mUserToken);
-        rp.setParam("start", Integer.toString(mMdLoadedItems));
-        rp.setParam("length", Integer.toString(loadStep));
+        rp.setParam("token", mUserToken);
+        rp.setParam("id", Integer.toString(iMotionDetect));
         genMotionDetectPopupAsyncTask task = new genMotionDetectPopupAsyncTask();
         task.execute(rp);
     }
@@ -219,21 +219,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         protected void onPostExecute(String s) {
             if(s == null)
                 return;
-            //Log.d("MyApp", "getMotionDetectListByCustomer replay" + ": " + s.length());
-            JSONObject mdObject;
-            try {
-                mMdLoadedItems += loadStep;
-                mdObject = new JSONObject(s);
-                if(mdObject.has("md_list")) {
-                    //JSONArray mdArray = mdObject.getJSONArray("md_list");
-                    //mMotionDetectList = MotionDetectParserNew.parseFeed(mMotionDetectList, mdArray);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } finally {
-                //pd.hide();
-                //updateDisplay();
-            }
-        }
+            Log.d("MyApp", "genMotionDetectPopup replay" + ": " + s);
+         }
     }
 }

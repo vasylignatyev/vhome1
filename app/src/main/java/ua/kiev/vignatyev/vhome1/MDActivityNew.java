@@ -89,7 +89,7 @@ public class MDActivityNew extends Activity implements AbsListView.OnItemClickLi
         //**********************
         // Set the adapter
         if(null != mMotionDetectList) {
-            motionDetectAdapter = new MDArrayAdapter(this, R.layout.item_motion_detect, mMotionDetectList);
+            //motionDetectAdapter = new MDArrayAdapter(this, R.layout.item_motion_detect, mMotionDetectList);
             mListView.setAdapter(motionDetectAdapter);
         }
     }
