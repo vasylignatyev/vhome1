@@ -2,6 +2,7 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,14 +31,16 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
     private static int loadStep = 10;
     private static final String ARG_USER_TOKEN = "user_token";
     private static final String ARG_OFFSET = "offset";
+    private static final String ARG_I_CUSTOMER_VCAM = "i_customer_vcam";
     private static final String TAG = "MDFragment";
     private static ArrayList<MotionDetectNew> mMotionDetectList = null;
     /**
      * VARS
      */
     private String mUserToken;
+    private int mICustomerVcam;
     private int mOffset;
-    private MainActivity mMainActivity;
+    //private MainActivity mMainActivity;
     private MDArrayAdapter motionDetectAdapter;
     private AbsListView mListView;
     private ProgressDialog pd;
@@ -50,9 +53,8 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
      * @param activity
      */
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mMainActivity = (MainActivity) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
         pd = new ProgressDialog(getActivity());
         pd.setTitle("Подключение к серверу");
         pd.setMessage("Ожидайте");
@@ -82,15 +84,16 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mUserToken = getArguments().getString(ARG_USER_TOKEN);
-            mOffset = getArguments().getInt(ARG_OFFSET);
+            mUserToken = getArguments().getString(ARG_USER_TOKEN, null);
+            mICustomerVcam = getArguments().getInt(ARG_I_CUSTOMER_VCAM, 0);
+            mOffset = getArguments().getInt(ARG_OFFSET, 0);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate( R.layout.fragment_alarm, container, false);
+        View view = inflater.inflate( R.layout.fragment_motion_detect_list, container, false);
 
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         mListView.setOnItemClickListener(this);
@@ -158,7 +161,10 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getMotionDetectList");
-        rp.setParam("user_token", mUserToken);
+        if(mUserToken != null)
+            rp.setParam("user_token", mUserToken);
+        if(mICustomerVcam != 0 )
+            rp.setParam("i_customer_vcam", Integer.toString(mICustomerVcam));
         rp.setParam("start", Integer.toString(mMdLoadedItems));
         rp.setParam("length", Integer.toString(loadStep));
         getMotionDetectListAsyncTask task = new getMotionDetectListAsyncTask();

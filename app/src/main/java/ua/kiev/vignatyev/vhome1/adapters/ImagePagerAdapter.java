@@ -84,9 +84,7 @@ public class ImagePagerAdapter extends PagerAdapter {
                 //int iMotionDetect = Integer.parseInt(view.getTag().toString());
                 //Log.d("MyApp", "ImageAdapter tag = " + Integer.toString(iMotionDetect));
 
-                //Intent intent = new Intent(mContext, MDActivity.class);
                 Intent intent = new Intent(mContext, PinchActivity.class);
-                //intent.putExtra(MDActivity.I_MOTION_DETECT, Integer.toString(iMotionDetect));
                 intent.putExtra(PinchActivity.ARG_IMAGE_URL, mdImage.uri);
                 mContext.startActivity(intent);
             }

@@ -1,145 +1,114 @@
 package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import ua.kiev.vignatyev.vhome1.HTTPManager;
+import ua.kiev.vignatyev.vhome1.MainActivity;
+import ua.kiev.vignatyev.vhome1.R;
+import ua.kiev.vignatyev.vhome1.RequestPackage;
+import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
+import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
+import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 
-public class MDActivity extends Activity {
-
-    public final static String I_MOTION_DETECT = "i_motion_detect";
+public class MDActivity extends Activity implements AbsListView.OnItemClickListener {
+    /**
+     * Static VARS
+     */
+    private static final String USER_TOKEN = "user_token";
+    private static final String I_MOTION_DETECT = "i_motion_detect";
+    private static final String I_CUSTOMER_VCAM = "i_customer_vcam";
+    private static final String VCAM_LOCATION = "vcam_location";
+    private static final String VCAM_NAME = "vcam_name";
+    private static final String TOTAL_MD = "total_md";
+    private static final String UNREVIEWED_MD = "unreviewed_md";
+    /**
+     * VARS
+     */
+    private AbsListView mListView;
+    private ProgressDialog pd;
     private String mIMotionDetect;
-    private static ArrayList<String> mImagesUrlList = new ArrayList<>();
-    private ExtendedViewPager mViewPager;
-
-    private static RequestQueue queue;
-
-    private TouchImageAdapter touchImageAdapter;
-
+    //private String mIMotionDetect;
+    private static ArrayList<MotionDetectNew> mMotionDetectList = null;
+    private MDArrayAdapter motionDetectAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_touch_image_view);
+        setContentView(R.layout.activity_mdactivity);
+        mListView = (AbsListView) findViewById(android.R.id.list);
+        mListView.setOnItemClickListener(this);
 
-        queue = Volley.newRequestQueue(this);
+        mListView.setEmptyView(findViewById(android.R.id.empty));
+
+        pd = new ProgressDialog(this);
+        pd.setTitle("Подключение к серверу");
+        pd.setMessage("Ожидайте");
+
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            mIMotionDetect = extras.getString(I_MOTION_DETECT, null);
-            if(null != mIMotionDetect) {
-                Log.d("MyApp", "MDActivity I_MOTION_DETECT: " + mIMotionDetect);
-                getMD_URL_List();
+            String i_customer_vcam = extras.getString(I_CUSTOMER_VCAM, null);
+            if(null != i_customer_vcam) {
+                Log.d("MyApp", "MDActivity I_CUSTOMER_VCAM: " + i_customer_vcam);
+                getMotionDetectListByICustomerVcam(Integer.parseInt(i_customer_vcam));
             }
         }
-        mViewPager = (ExtendedViewPager) findViewById(R.id.view_pager);
-        setContentView(mViewPager);
+
     }
 
     @Override
     protected void onDestroy() {
+        ArrayAdapter arrayAdapter = ((ArrayAdapter)mListView.getAdapter());
+        if(null != arrayAdapter) {
+            arrayAdapter.clear();
+        }
         super.onDestroy();
-        Log.d("MyApp", "MDActivity::onDestroy");
-       // touchImageAdapter.n
-        mViewPager.setAdapter(null);
     }
-    //**************************************************************
-    static class TouchImageAdapter extends PagerAdapter {
 
-        //private TouchImageView img;
-        @Override
-        public int getCount() {
-            return mImagesUrlList.size();
-        }
-
-        @Override
-        public View instantiateItem(ViewGroup container, int position) {
-            final TouchImageView img = new TouchImageView(container.getContext());
-            img.setId(1966);
-
-            String url = MainActivity.SERVER_URL + mImagesUrlList.get(position);
-            Log.d("MyApp", "Gettining image: " + url);
-
-            container.addView(img, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-            ImageRequest imageRequest = new ImageRequest( url,
-                new Response.Listener<Bitmap>() {
-                    @Override
-                    public void onResponse(Bitmap bitmap) {
-                        img.setImageBitmap(bitmap);
-                    }
-                }, 0,0,
-                Bitmap.Config.ARGB_8888,
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.d("MyApp",volleyError.getMessage());
-                    }
-                }
-            );
-            queue.add(imageRequest);
-
-            return img;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-
-            TouchImageView img = (TouchImageView) container.findViewById(1966);
-
-            Drawable drawable = img.getDrawable();
-
-            if (drawable instanceof BitmapDrawable) {
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-                Bitmap bitmap = bitmapDrawable.getBitmap();
-                bitmap.recycle();
-            }
-            container.removeView((View) object);
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
     }
+    public void updateDisplay(){
+        Log.d("MyApp", "updateDisplay");
+
+        //**********************
+        // Set the adapter
+        if(null != mMotionDetectList) {
+            //motionDetectAdapter = new MDArrayAdapter(this, R.layout.item_motion_detect, mMotionDetectList);
+            mListView.setAdapter(motionDetectAdapter);
+        }
+    }
+
+
 
     /**
-     * REST Request for Vcam List
+     * REST Request for getMotionDetectListByCustomer
      */
-    public void getMD_URL_List() {
-
-        //************************
+    private void getMotionDetectListByICustomerVcam(int iCustomerVcam) {
+        pd.show();
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
-        rp.setParam("functionName", "getMD_URL_List");
-        rp.setParam("i_motion_detect", mIMotionDetect);
-
-        getMD_URL_ListtAsyncTask task = new getMD_URL_ListtAsyncTask();
+        rp.setParam("functionName", "getMotionDetectList");
+        rp.setParam("i_customer_vcam", Integer.toString(iCustomerVcam) );
+        getMotionDetectListByICustomerVcamAsyncTask task = new getMotionDetectListByICustomerVcamAsyncTask();
         task.execute(rp);
     }
-    /**
-     * Async taskfor Vcam List
-     */
-    public class getMD_URL_ListtAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+    private class getMotionDetectListByICustomerVcamAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
             String replay = HTTPManager.getData(params[0]);
@@ -147,25 +116,27 @@ public class MDActivity extends Activity {
         }
         @Override
         protected void onPostExecute(String s) {
-            Log.d("MyApp", "getMD_URL_List:" + s);
-            if(s == null)
-                return;
+            Log.d("MyApp", "getMotionDetectListByICustomerVcam replay" + ": " + s.length());
+            JSONObject mdObject = null;
             try {
-                JSONArray imageArray = new JSONArray(s);
-                mImagesUrlList.clear();
-                for(int i = 0 ; i < imageArray.length(); i++ ) {
-                    String url = imageArray.getString(i);
-                    mImagesUrlList.add(url);
+                mdObject = new JSONObject(s);
+
+                if(mdObject.has("cam_name")) {
+                    //mCamName = mdObject.getString("cam_name");
+                    //tvCamName.setText(mCamName);
                 }
-                if(touchImageAdapter == null) {
-                    touchImageAdapter = new TouchImageAdapter();
-                    mViewPager.setAdapter(touchImageAdapter);
-                } else {
-                    touchImageAdapter.notifyDataSetChanged();
+                if(mdObject.has("md_list")) {
+                    JSONArray mdArray = mdObject.getJSONArray("md_list");
+                    mMotionDetectList = MotionDetectParserNew.parseFeed(mMotionDetectList , mdArray);
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
+            } finally {
+                pd.hide();
+                updateDisplay();
             }
         }
     }
+
 }

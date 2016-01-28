@@ -11,6 +11,4 @@ public class VarchPlayerActivity extends Activity {
         setContentView(R.layout.activity_varch_player);
     }
 
-
-
 }
