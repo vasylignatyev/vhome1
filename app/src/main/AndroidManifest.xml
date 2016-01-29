@@ -75,7 +75,6 @@
             android:name=".gcm.RegistrationIntentService"
             android:exported="false" />
 
-        <activity android:name=".MDActivity" />
         <activity
             android:name=".PinchActivity"
             android:label="@string/title_activity_pinch" />

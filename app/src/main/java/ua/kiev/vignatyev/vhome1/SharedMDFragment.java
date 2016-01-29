@@ -29,7 +29,7 @@ public class SharedMDFragment extends Fragment implements AbsListView.OnItemClic
      */
     private static int loadStep = 10;
     private static final String ARG_USER_TOKEN = "user_token";
-    private static final String TAG = "MDFragment";
+    private static final String TAG = "MotionDetectFragment";
     private static ArrayList<MotionDetectNew> mMotionDetectList = null;
     /**
      * VARS
@@ -107,12 +107,12 @@ public class SharedMDFragment extends Fragment implements AbsListView.OnItemClic
                                  int visibleItemCount, int totalItemCount) {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
                 if (lastInScreen == totalItemCount) {
-                    getSharedMotionDetectListByCustomer();
+                    getSharedMotionDetectList();
                 }
             }
         });
 
-        getSharedMotionDetectListByCustomer();
+        getSharedMotionDetectList();
 
         return view;
     }
@@ -149,18 +149,18 @@ public class SharedMDFragment extends Fragment implements AbsListView.OnItemClic
     /**
      * REST Request for getMotionDetectListByCustomer
      */
-    private void getSharedMotionDetectListByCustomer() {
+    private void getSharedMotionDetectList() {
         pd.show();
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
         rp.setMethod("GET");
-        rp.setParam("functionName", "getSharedMotionDetectListByCustomer");
+        rp.setParam("functionName", "getSharedMotionDetectList");
         rp.setParam("user_token", mUserToken);
         rp.setParam("start", Integer.toString(mMdLoadedItems));
         rp.setParam("length", Integer.toString(loadStep));
-        getSharedMotionDetectListByCustomerAsyncTask task = new getSharedMotionDetectListByCustomerAsyncTask();
+        getSharedMotionDetectListAsyncTask task = new getSharedMotionDetectListAsyncTask();
         task.execute(rp);
     }
-    private class getSharedMotionDetectListByCustomerAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+    private class getSharedMotionDetectListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
             String replay = HTTPManager.getData(params[0]);

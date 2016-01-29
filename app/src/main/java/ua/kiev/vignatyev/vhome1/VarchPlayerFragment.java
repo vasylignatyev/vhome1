@@ -4,6 +4,7 @@ package ua.kiev.vignatyev.vhome1;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -35,8 +36,6 @@ public class VarchPlayerFragment extends Fragment {
     private String mUserToken;
     private String mVcamToken;
 
-    private MainActivity mMainActivity;
-
     private VideoView videoView;
 
     private String mVarchLinkName;
@@ -57,16 +56,23 @@ public class VarchPlayerFragment extends Fragment {
     public VarchPlayerFragment() {
     }
 
+    /**
+     *
+     * @param context
+     */
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        pd = new ProgressDialog(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        pd = new ProgressDialog(context);
         pd.setTitle("Загрузка видео");
         pd.setMessage("Ожидайте");
         pd.show();
-        mMainActivity = (MainActivity) activity;
     }
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +119,7 @@ public class VarchPlayerFragment extends Fragment {
         });
 
         DisplayMetrics dm = new DisplayMetrics();
-        mMainActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
         Log.d("MyApp", "height = " + height);
         int width = dm.widthPixels;
@@ -122,16 +128,15 @@ public class VarchPlayerFragment extends Fragment {
         videoView.setMinimumHeight(height);
         videoView.setMediaController(mediaController);
         //Убираем все ненужное
-        android.app.ActionBar actionBar = mMainActivity.getActionBar();
-        mOldOptions = mMainActivity.getWindow().getDecorView().getSystemUiVisibility();
+        mOldOptions = getActivity().getWindow().getDecorView().getSystemUiVisibility();
         int newOptions = mOldOptions;
         newOptions &= ~View.SYSTEM_UI_FLAG_LOW_PROFILE;
         newOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
         newOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         newOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE;
         newOptions &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        mMainActivity.getWindow().getDecorView().setSystemUiVisibility(newOptions);
-        actionBar.hide();
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(newOptions);
+        getActivity().getActionBar().hide();
 
         return view;
     }
@@ -151,8 +156,8 @@ public class VarchPlayerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         Log.d("MyApp", TAG + ": onDestroyView" );
-        android.app.ActionBar actionBar = mMainActivity.getActionBar();
-        mMainActivity.getWindow().getDecorView().setSystemUiVisibility(mOldOptions);
+        android.app.ActionBar actionBar = getActivity().getActionBar();
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(mOldOptions);
         actionBar.show();
         super.onDestroyView();
     }
@@ -171,7 +176,7 @@ public class VarchPlayerFragment extends Fragment {
         Log.d("MyApp", "vArchURL name : " + mVarchName);
         pd.show();
         //************************
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "varchURL");
         rp.setParam("user_token", mUserToken);
@@ -181,10 +186,6 @@ public class VarchPlayerFragment extends Fragment {
         GetVarchURLAsyncTask task = new GetVarchURLAsyncTask();
         task.execute(rp);
     }
-
-    /**
-     * Async taskfor Varch URL
-     */
     public class GetVarchURLAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
@@ -204,14 +205,13 @@ public class VarchPlayerFragment extends Fragment {
              }
         }
     }
-
     /**
      * REST Request for Varch URL
      */
     public void getVarchNext() {
         Log.d("MyApp", "getVarchNext name : " + mVarchName);
         //************************
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getVarchNext");
         rp.setParam("vcam_token", mVcamToken);

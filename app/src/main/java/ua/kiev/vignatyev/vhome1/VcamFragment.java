@@ -2,6 +2,7 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,7 +34,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      * VARS
      */
     private VcamArrayAdapter vcamArrayAdapter;
-    private MainActivity mMainActivity;
     private ProgressDialog pd;
     private String mUserToken;
     private ListView mListView;
@@ -54,13 +54,11 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        pd = new ProgressDialog(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        pd = new ProgressDialog(context);
         pd.setTitle("Подключение к серверу");
         pd.setMessage("Ожидайте");
-        mMainActivity = (MainActivity) activity;
-
-        super.onAttach(activity);
     }
 
     @Override
@@ -68,7 +66,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mUserToken = getArguments().getString(USER_TOKEN);
+            mUserToken = getArguments().getString(USER_TOKEN, null);
         }
     }
 
@@ -87,11 +85,15 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        getCustomerVCamList();
+
+        /*
         if(MainActivity.isVcamListEmpty()) {
             getCustomerVCamList();
         } else  {
             updateDisplay();
         }
+        */
     }
 
     public void updateDisplay(){
@@ -107,25 +109,12 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //set arguments
         Vcam vcam = MainActivity.getVcam(Integer.parseInt(view.getTag().toString()));
         mStreamURL = vcam.getVcamURL();
         getHashString(vcam.getTOKEN());
-
-        //.append("?").append(.toString();
-
-/*
-        Fragment newFragment = VcamPlayerFragment.newInstance(steamURL);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        transaction.replace(R.id.container, newFragment, VcamPlayerFragment.TAG);
-        transaction.addToBackStack(null);
-        transaction.commit();
-        fragmentManager.executePendingTransactions();
-        */
     }
-
+    //video Archive Button Click
     @Override
     public void onArchButtonClick(View v) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

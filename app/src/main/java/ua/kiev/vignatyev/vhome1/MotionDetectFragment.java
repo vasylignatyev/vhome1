@@ -1,6 +1,5 @@
 package ua.kiev.vignatyev.vhome1;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -24,15 +23,17 @@ import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 
-public class MDFragment extends Fragment implements AbsListView.OnItemClickListener, MDArrayAdapter.OnMDArrayAdapterListener {
+public class MotionDetectFragment extends Fragment
+        implements AbsListView.OnItemClickListener, MDArrayAdapter.OnMDArrayAdapterListener {
     /**
      * Static VARS
      */
+    public static final String ARG_USER_TOKEN = "user_token";
+    public static final String ARG_OFFSET = "offset";
+    public static final String ARG_I_CUSTOMER_VCAM = "i_customer_vcam";
+
     private static int loadStep = 10;
-    private static final String ARG_USER_TOKEN = "user_token";
-    private static final String ARG_OFFSET = "offset";
-    private static final String ARG_I_CUSTOMER_VCAM = "i_customer_vcam";
-    private static final String TAG = "MDFragment";
+    private static final String TAG = "MotionDetectFragment";
     private static ArrayList<MotionDetectNew> mMotionDetectList = null;
     /**
      * VARS
@@ -64,8 +65,8 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
      * @param userToken
      * @return
      */
-    public static MDFragment newInstance(String userToken, int offset) {
-        MDFragment fragment = new MDFragment();
+    public static MotionDetectFragment newInstance(String userToken, int offset) {
+        MotionDetectFragment fragment = new MotionDetectFragment();
         Bundle args = new Bundle();
         args.putString(ARG_USER_TOKEN, userToken);
         args.putInt(ARG_OFFSET, offset);
@@ -76,7 +77,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
     /**
      *
      */
-    public MDFragment() {
+    public MotionDetectFragment() {
     }
 
     @Override
@@ -112,12 +113,12 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
                                  int visibleItemCount, int totalItemCount) {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
                 if (lastInScreen == totalItemCount) {
-                    getMotionDetectListByCustomer();
+                    getMotionDetectList();
                 }
             }
         });
 
-        getMotionDetectListByCustomer();
+        getMotionDetectList();
 
         return view;
     }
@@ -127,7 +128,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         ((ArrayAdapter) mListView.getAdapter()).clear();
         mMotionDetectList = null;
         super.onDestroyView();
-        Log.d("MyApp", "MDFragment::onDestroyView");
+        Log.d("MyApp", "MotionDetectFragment::onDestroyView");
     }
 
     @Override
@@ -154,9 +155,9 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
     }
 
     /**
-     * REST Request for getMotionDetectListByCustomer
+     * REST Request for getMotionDetectList
      */
-    private void getMotionDetectListByCustomer() {
+    private void getMotionDetectList() {
         pd.show();
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
@@ -181,7 +182,7 @@ public class MDFragment extends Fragment implements AbsListView.OnItemClickListe
         protected void onPostExecute(String s) {
             if (s == null)
                 return;
-            //Log.d("MyApp", "getMotionDetectListByCustomer replay" + ": " + s.length());
+            //Log.d("MyApp", "getMotionDetectList replay" + ": " + s.length());
             JSONObject mdObject;
             try {
                 mMdLoadedItems += loadStep;

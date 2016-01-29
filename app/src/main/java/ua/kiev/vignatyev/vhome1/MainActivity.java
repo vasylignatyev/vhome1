@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -181,7 +180,7 @@ public class MainActivity extends FragmentActivity
                     newFragment = ScamFragment.newInstance(mUserToken);
                     break;
                 case 2:
-                    newFragment = MDFragment.newInstance(mUserToken, 0);
+                    newFragment = MotionDetectFragment.newInstance(mUserToken, 0);
                     break;
                 case 3:
                     newFragment = SharedMDFragment.newInstance(mUserToken);

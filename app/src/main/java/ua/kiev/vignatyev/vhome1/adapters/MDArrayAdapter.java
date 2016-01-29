@@ -19,7 +19,6 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.List;
 
-import ua.kiev.vignatyev.vhome1.MDFragment;
 import ua.kiev.vignatyev.vhome1.R;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 

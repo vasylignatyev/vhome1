@@ -13,7 +13,6 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 import ua.kiev.vignatyev.vhome1.MotionDetectActivity;
 import ua.kiev.vignatyev.vhome1.R;
-//import ua.kiev.vignatyev.vhome1.MDActivity;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -72,7 +71,6 @@ public class MyGcmListenerService extends GcmListenerService {
      */
     private void sendNotification(String message, Bundle data) {
 
-        //Intent intent = new Intent(this, MDActivity.class);
         Intent intent = new Intent(this, MotionDetectActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

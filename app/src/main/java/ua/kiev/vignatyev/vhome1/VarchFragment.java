@@ -2,6 +2,7 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,16 +27,8 @@ import ua.kiev.vignatyev.vhome1.adapters.VarchArrayAdapter;
 import ua.kiev.vignatyev.vhome1.models.Varch;
 import ua.kiev.vignatyev.vhome1.parsers.VarchParser;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Large screen devices (such as tablets) are supported by replacing the ListView
- * with a GridView.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
- * interface.
- */
-public class VarchFragment extends Fragment implements AbsListView.OnItemClickListener, View.OnClickListener {
+public class VarchFragment extends Fragment
+        implements AbsListView.OnItemClickListener, View.OnClickListener {
     /**
      * Static VARS
      */
@@ -47,10 +40,6 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
      */
     private Button btnDate;
     private String mVcamToken, mUserToken;
-    private MainActivity mMainActivity;
-    private int mYear;
-    private int mMonth;
-    private int mDay;
     private List<Varch> mVarchList;
     private VarchArrayAdapter mVarchArrayAdapter;
     private AbsListView mListView;
@@ -74,21 +63,12 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
      *
      */
     public VarchFragment() {
-        Calendar calender = Calendar.getInstance();
-        mYear = calender.get(Calendar.YEAR);
-        mMonth = calender.get(Calendar.MONTH);
-        mDay = calender.get(Calendar.DAY_OF_MONTH);
     }
 
-    /**
-     *
-     * @param activity
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mMainActivity = (MainActivity) activity;
-    }
+     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+     }
 
     /**
      *
@@ -124,7 +104,6 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
 
         btnDate = (Button) view.findViewById(R.id.btDate);
         btnDate.setOnClickListener(this);
-        setDate();
         getCustomerVArchTable();
         return view;
     }
@@ -143,7 +122,7 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
         //varchURL(varch.archiveName);
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        Fragment newFragment = (Fragment) VarchPlayerFragment.newInstance(varch.archiveName, mUserToken, mVcamToken);
+        Fragment newFragment = VarchPlayerFragment.newInstance(varch.archiveName, mUserToken, mVcamToken);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.replace(R.id.container, newFragment);
@@ -175,26 +154,13 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
     @Override
     public void onClick(View view) {
         Log.d("MyApp", "Click");
-        DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                mYear = year;
-                mMonth = month;
-                mDay = day;
-                setDate();
-                getCustomerVArchTable();
-            }
-        };
-        DatePickerFragment datePickerFragment = DatePickerFragment.newInstance( mYear, mMonth, mDay);
-        datePickerFragment.setCallBack(onDateSetListener);
-        datePickerFragment.show(mMainActivity.getFragmentManager(), "TEST");
     }
 
     /**
      *
      */
      public interface OnVarchInteractionListener {
-        public void onVarchInteractionListener(String id);
+        void onVarchInteractionListener(String id);
     }
 
     /**
@@ -208,24 +174,10 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
     }
 
     /**
-     *
-     */
-    public void setDate(){
-        Calendar c = Calendar.getInstance();
-        c.set(mYear, mMonth, mDay, 0, 0, 0);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        btnDate.setText(df.format(c.getTime()));
-     }
-
-    /**
      * REST Request for Varch List
      */
     public void getCustomerVArchTable() {
         Log.d("MyApp", "getCustomerVArchTable token: " + mUserToken);
-        Calendar c = Calendar.getInstance();
-        c.set(mYear, mMonth, mDay, 0, 0, 0);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String cDate = df.format(c.getTime());
 
         //************************
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
@@ -235,8 +187,6 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
         rp.setParam("start", "0");
         rp.setParam("length", "300");
         rp.setParam("draw", "1");
-        rp.setParam("fromDate", cDate + " 00:00:00" );
-        rp.setParam("tillDate", cDate + " 23:59:59" );
 
         getCustomerVArchTableAsyncTask task = new getCustomerVArchTableAsyncTask();
         task.execute(rp);
@@ -256,38 +206,6 @@ public class VarchFragment extends Fragment implements AbsListView.OnItemClickLi
             Log.d("MyApp","getCustomerVArchTable Replay: " + s);
             mVarchList = VarchParser.parseFeed(s);
             updateDisplay();
-        }
-    }
-
-    /**
-     * REST Request for Varch URL
-     */
-    public void varchURL(String varchName) {
-        Log.d("MyApp", "vArchURL name : " + varchName);
-        //************************
-        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
-        rp.setMethod("GET");
-        rp.setParam("functionName", "varchURL");
-        rp.setParam("user_token", mUserToken);
-        rp.setParam("vcam_token", mVcamToken);
-        rp.setParam("varch_name", varchName);
-
-        GetVarchURLAsyncTask task = new GetVarchURLAsyncTask();
-        task.execute(rp);
-    }
-
-    /**
-     * Async taskfor Varch URL
-     */
-    public class GetVarchURLAsyncTask extends AsyncTask<RequestPackage, Void, String> {
-        @Override
-        protected String doInBackground(RequestPackage... params) {
-            String replay = HTTPManager.getData(params[0]);
-            return replay;
-        }
-        @Override
-        protected void onPostExecute(String s) {
-            Log.d("MyApp", "GetVarchURLAsyncTask Replay: " + s);
         }
     }
 }
