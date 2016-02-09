@@ -2,6 +2,7 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,14 +39,18 @@ public class VarchPlayerActivityFragment extends Fragment {
         return fragment;
     }
 
+
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity;
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            if (context instanceof Activity){
+                activity = (Activity) context;
+                mListener = (OnFragmentInteractionListener) activity;
+            }
         } catch (ClassCastException e) {
-            //throw new ClassCastException(activity.toString()
-            //        + " must implement OnFragmentInteractionListener");
+            throw new ClassCastException("Must implement OnFragmentInteractionListener");
         }
     }
 

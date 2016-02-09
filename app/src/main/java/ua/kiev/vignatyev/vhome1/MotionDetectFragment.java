@@ -51,7 +51,7 @@ public class MotionDetectFragment extends Fragment
      */
 
     /**
-     * @param activity
+     * @param context
      */
     @Override
     public void onAttach(Context context) {
