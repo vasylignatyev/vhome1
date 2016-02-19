@@ -30,6 +30,8 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.gcm.QuickstartPreferences;
 import ua.kiev.vignatyev.vhome1.gcm.RegistrationIntentService;
 import ua.kiev.vignatyev.vhome1.models.Credentials;

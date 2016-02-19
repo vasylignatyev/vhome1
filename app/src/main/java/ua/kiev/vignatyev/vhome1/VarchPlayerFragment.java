@@ -1,16 +1,12 @@
 package ua.kiev.vignatyev.vhome1;
 
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +18,8 @@ import android.widget.VideoView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.models.Varch;
 
 

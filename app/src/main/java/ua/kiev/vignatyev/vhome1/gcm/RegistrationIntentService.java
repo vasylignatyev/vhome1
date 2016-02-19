@@ -14,10 +14,10 @@ import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
-import ua.kiev.vignatyev.vhome1.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
 import ua.kiev.vignatyev.vhome1.MainActivity;
 import ua.kiev.vignatyev.vhome1.R;
-import ua.kiev.vignatyev.vhome1.RequestPackage;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 
 /**
  * Created by vignatyev on 23.09.2015.

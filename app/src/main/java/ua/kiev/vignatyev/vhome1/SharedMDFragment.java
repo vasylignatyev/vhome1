@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.models.MotionDetectNew;
 import ua.kiev.vignatyev.vhome1.parsers.MotionDetectParserNew;
 

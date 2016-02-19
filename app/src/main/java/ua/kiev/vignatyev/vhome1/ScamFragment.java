@@ -16,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import ua.kiev.vignatyev.vhome1.adapters.VcamArrayAdapter;
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
 
 public class ScamFragment extends Fragment implements AbsListView.OnItemClickListener, VcamArrayAdapter.OnAdapterInteractionListener {

@@ -1,4 +1,4 @@
-package ua.kiev.vignatyev.vhome1;
+package ua.kiev.vignatyev.vhome1.ajax;
 
 import android.util.Log;
 

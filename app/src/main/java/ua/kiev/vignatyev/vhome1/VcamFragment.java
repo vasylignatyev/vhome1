@@ -1,6 +1,5 @@
 package ua.kiev.vignatyev.vhome1;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -18,9 +17,10 @@ import android.widget.ListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import ua.kiev.vignatyev.vhome1.adapters.VcamArrayAdapter;
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.models.Vcam;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
 
@@ -30,10 +30,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     private static final String USER_TOKEN = "user_token";
     private static final String TAG = "VcamFragment";
-    /**
-     * VARS
-     */
-    private VcamArrayAdapter vcamArrayAdapter;
     private ProgressDialog pd;
     private String mUserToken;
     private ListView mListView;
@@ -53,6 +49,9 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         return fragment;
     }
 
+    /**
+     * LIFE CICLE
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -86,26 +85,24 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
         super.onActivityCreated(savedInstanceState);
 
         getCustomerVCamList();
-
-        /*
-        if(MainActivity.isVcamListEmpty()) {
-            getCustomerVCamList();
-        } else  {
-            updateDisplay();
-        }
-        */
     }
 
+    /**
+     * SERVICE FUNCTION
+     */
+
     public void updateDisplay(){
-        vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
-        if(null != vcamArrayAdapter) {
-            vcamArrayAdapter.setOnAdapterInteractionListener(this);
-            if(null != mListView ) {
-                mListView.setAdapter(vcamArrayAdapter);
-            }
+        VcamArrayAdapter vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
+        vcamArrayAdapter.setOnAdapterInteractionListener(this);
+        if(null != mListView ) {
+            mListView.setAdapter(vcamArrayAdapter);
         }
         pd.hide();
     }
+
+    /**
+     * IMPLEMENTED
+     */
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -117,14 +114,25 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     //video Archive Button Click
     @Override
     public void onArchButtonClick(View v) {
+        /*
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         Fragment newFragment = VarchFragment.newInstance(mUserToken, v.getTag().toString());
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
         transaction.replace(R.id.container, newFragment);
         transaction.addToBackStack(TAG);
         transaction.commit();
         fragmentManager.executePendingTransactions();
+        */
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        Fragment newFragment = ScrollBarFragment.newInstance(mUserToken, v.getTag().toString());
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
+        transaction.replace(R.id.container, newFragment);
+        transaction.addToBackStack(TAG);
+        transaction.commit();
+        fragmentManager.executePendingTransactions();
+
     }
 
     /**
@@ -145,8 +153,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public class getCustomerVCamListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
-            String replay = HTTPManager.getData(params[0]);
-            return replay;
+            return HTTPManager.getData(params[0]);
         }
         @Override
         protected void onPostExecute(String s) {
@@ -160,9 +167,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      * REST Request for Hash String
      */
     public void getHashString(String camToken) {
-
-        //pd.show();
-        //************************
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "get_hash_string");
@@ -175,15 +179,14 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     public class getHashStringAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
-            String replay = HTTPManager.getData(params[0]);
-            return replay;
+            return HTTPManager.getData(params[0]);
         }
         @Override
         protected void onPostExecute(String s) {
             Log.d("MyApp", "getHashString:" + s);
 
             JSONObject obj;
-            String hash_string = null;
+            String hash_string;
             try {
                 obj = new JSONObject(s);
                 if(obj.has("hash_string")) {
@@ -195,7 +198,7 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
 
                 Fragment newFragment = VcamPlayerFragment.newInstance(mStreamURL);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
                 transaction.replace(R.id.container, newFragment, VcamPlayerFragment.TAG);
                 transaction.addToBackStack(null);
                 transaction.commit();

@@ -19,6 +19,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.models.Credentials;
 
 

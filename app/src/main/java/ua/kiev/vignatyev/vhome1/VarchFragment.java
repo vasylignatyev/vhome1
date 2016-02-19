@@ -1,7 +1,5 @@
 package ua.kiev.vignatyev.vhome1;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,15 +13,14 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 import ua.kiev.vignatyev.vhome1.adapters.VarchArrayAdapter;
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.models.Varch;
 import ua.kiev.vignatyev.vhome1.parsers.VarchParser;
 

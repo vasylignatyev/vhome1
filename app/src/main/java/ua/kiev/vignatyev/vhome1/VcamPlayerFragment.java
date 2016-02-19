@@ -15,6 +15,8 @@ import android.widget.VideoView;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
+import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
 import ua.kiev.vignatyev.vhome1.models.Vcam;
 
 
