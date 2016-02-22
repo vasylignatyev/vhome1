@@ -172,6 +172,9 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         protected void onPostExecute(String s) {
             Log.d("MyApp",TAG + ": " + s);
 
+            if( s == null )
+                return;
+
             try {
                 JSONObject obj = new JSONObject(s);
                 Log.d("MyApp", obj.toString());
