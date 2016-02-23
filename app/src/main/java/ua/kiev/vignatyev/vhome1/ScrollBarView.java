@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.support.v4.view.GestureDetectorCompat;
@@ -20,7 +21,6 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -47,7 +47,8 @@ public class ScrollBarView extends View {
 
     private int mViewX, mViewY;
 
-    private Paint cursorPaint, fontPaint, archivePaint, mdPaint, backgroundPaint;
+    private Paint cursorPaint, fontPaint, archivePaint, mdPaint, backgroundPaint, scalePaint;
+    private static final int sursorSize = 16;
 
     private ScrollBarView scrollBarView = this;
 
@@ -56,7 +57,7 @@ public class ScrollBarView extends View {
     private List<Event> mMDList = new LinkedList<Event>();
 
     /** scale length in milliseconds*/
-    private long mScaleSec;
+    private long mScaleMillisec;
 
     private int mICustomerVcam = 143;
 
@@ -75,6 +76,16 @@ public class ScrollBarView extends View {
     private Date mObservationStart = new Date(mObservationEnd.getTime() - OBSERVATION_PERIOD_DURATION);
 
     CountDownTimer mCountDownTimer;
+    /**
+     * GETTERS AND SETTERS
+     */
+    public Date getCurrentDate() {
+        return mCurrentDate;
+    }
+
+    public void setCurrentDate(long currentDate) {
+        this.mCurrentDate.setTime(currentDate);
+    }
 
     /**
      * CONSTRUCTORS
@@ -96,27 +107,34 @@ public class ScrollBarView extends View {
         mCurrentDate = new Date();
         /** period of observation initialization */
 
-        mScaleSec = (long)(DEFAULT_SCALE_SEC * mScaleFactor); // milliseconds
+        mScaleMillisec = (long)(DEFAULT_SCALE_SEC * mScaleFactor); // milliseconds
 
         cursorPaint = new Paint();
-        cursorPaint.setStyle(Paint.Style.STROKE);
-        cursorPaint.setStrokeWidth(0);
-        cursorPaint.setAntiAlias(false);
-        cursorPaint.setColor(Color.BLACK);
+        cursorPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        //cursorPaint.setStrokeWidth(0);
+        cursorPaint.setAntiAlias(true);
+        cursorPaint.setColor(Color.RED);
+
+        scalePaint = new Paint();
+        scalePaint.setStyle(Paint.Style.STROKE);
+        scalePaint.setStrokeWidth(0);
+        scalePaint.setAntiAlias(false);
+        scalePaint.setColor(Color.BLACK);
 
         fontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         fontPaint.setTextSize(20);
         fontPaint.setStyle(Paint.Style.STROKE);
+        fontPaint.setTextAlign(Paint.Align.CENTER);
+        //fontPaint.Align();
 
         archivePaint = new Paint();
         archivePaint.setColor(Color.rgb(200, 200, 200));
         archivePaint.setStrokeWidth(0);
 
         mdPaint = new Paint();
-        //mdPaint.setStyle(Paint.Style.STROKE);
         mdPaint.setStrokeWidth(1);
-        //mdPaint.setAntiAlias(false);
         mdPaint.setColor(Color.YELLOW);
+
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(Color.BLUE);
@@ -171,6 +189,9 @@ public class ScrollBarView extends View {
         int prevX = 0;
         int currX;
 
+        int halfScale = mViewX >> 1;
+        int baseLine  = mViewY >> 1;
+
         canvas.drawRect(0, 0, mViewX, mViewY, backgroundPaint);
 
         for( Map.Entry<Date, Integer> md : mArchiveMap.entrySet()){
@@ -185,19 +206,56 @@ public class ScrollBarView extends View {
         }
         //*** Draw motion detects
         if(mMDList != null ) {
-            for (Event mdEvevt : mMDList) {
-                int x1 = getXOffset(mdEvevt.eventStart);
-                int x2 = getXOffset(mdEvevt.eventStop);
-                if( x1 == x2)
-                    x2 = x1 + 1;
-
-                canvas.drawRect(x1, 0, x2, mViewY, mdPaint);
+            int x1, x2;
+            for (Event mdEvent : mMDList) {
+                x1 = getXOffset(mdEvent.eventStart);
+                if( (x1 <= 0) ) {
+                    continue;
+                }
+                if(mdEvent.eventStart.getTime() == mdEvent.eventStop.getTime()) {
+                    canvas.drawLine( x1, 0 , x1, mViewY,mdPaint);
+                    continue;
+                }
+                x2 = getXOffset(mdEvent.eventStop);
+                if(x2 >= mViewX) {
+                    continue;
+                }
+                if(x1 == x2) {
+                    x2 = x2 + 1;
+                }
+                //canvas.drawRect(x1, 0, x2, mViewY, mdPaint);
             }
         }
+        //************** CURSOR
+
+        Path path = new Path();
+        path.setFillType(Path.FillType.EVEN_ODD);
+        path.moveTo(halfScale, sursorSize);
+        path.lineTo(halfScale - sursorSize, 0);
+        path.lineTo(halfScale + sursorSize, 0);
+        path.lineTo(halfScale, sursorSize);
+
+        path.lineTo(halfScale, mViewY - sursorSize);
+        path.lineTo(halfScale - sursorSize, mViewY);
+        path.lineTo(halfScale + sursorSize, mViewY);
+        path.lineTo(halfScale, mViewY - sursorSize);
+
+        path.lineTo(halfScale, 0);
+
+        path.close();
+        canvas.drawPath(path, cursorPaint);
+
+        canvas.drawLine(mViewX >> 1, 0, mViewX >> 1, mViewY, cursorPaint);
+
+        //******************** Date
+        canvas.drawText(mDateFormat.format(mCurrentDate), (mViewX >> 1) + 5, 28, fontPaint);
+
         //*** Draw Scale
         int x, size;
         int hours, minutes, seconds;
-        Date scaleStart = new Date(mCurrentDate.getTime() - (mScaleSec>>1));
+
+        Date scaleStart = new Date(mCurrentDate.getTime() - (mScaleMillisec >> 1));
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(scaleStart);
         seconds = calendar.get(Calendar.SECOND);
@@ -205,24 +263,28 @@ public class ScrollBarView extends View {
             calendar.add(Calendar.SECOND, 60 - seconds);
         minutes = calendar.get(Calendar.MINUTE);
         if(minutes != 0)
-            calendar.add(Calendar.MINUTE, 60 - minutes);
-        //**************
-        canvas.drawLine(mViewX >> 1, 0, mViewX >> 1, mViewY, cursorPaint);
-        canvas.drawText(mDateFormat.format(mCurrentDate), mViewX >> 1 + 5, 28, fontPaint);
+            calendar.add(Calendar.MINUTE, 15 - minutes % 15);
 
+        //***************** Scale
         while ( (x = getXOffset(calendar.getTime())) < mViewX) {
             minutes = calendar.get(Calendar.MINUTE);
             hours = calendar.get(Calendar.HOUR);
+            size = 10;
             if (minutes == 30) {
-                size = 10;
-            } else if ((hours % 3) == 0) {
-                canvas.drawText(format.format(calendar.getTime()), x - 12, mViewY - 28, fontPaint);
-                size = 26;
-            } else {
                 size = 16;
             }
-            canvas.drawLine(x, mViewY - size, x, mViewY, cursorPaint);
-            calendar.add(Calendar.MINUTE, 30);
+            if (minutes == 0) {
+                if ((hours % 3) == 0) {
+                    canvas.drawText(format.format(calendar.getTime()), x, baseLine + 10, fontPaint);
+                    size = 0;
+                } else {
+                    canvas.drawText(format.format(calendar.getTime()), x, baseLine + 10, fontPaint);
+                    size = 0;
+                }
+            }
+            if(size != 0)
+                canvas.drawLine(x, baseLine - size, x, baseLine + size, scalePaint);
+            calendar.add(Calendar.MINUTE, 15);
         }
     }
     @Override
@@ -249,17 +311,17 @@ public class ScrollBarView extends View {
     }
 
     public void getNextMD(){
+        Log.d("MyApp", "--------------> getNextMD");
         for( Event ev : mMDList ) {
             if (ev.eventStart.getTime() > mCurrentDate.getTime()) {
-                //Log.d("MyApp", "mCurrentDate = " + mCurrentDate.toString() + " eventStart = " + ev.eventStart);
                 setCurrentDate(ev.eventStart);
                 if(mListener != null) {
                     mListener.onScroll( ev.eventStart, ev.eventStop );
+                    Log.d("MyApp", "eventStart->" + ev.eventStart + "  eventStart->" + ev.eventStop);
                 }
                 break;
             }
         }
-
     }
 
     /**
@@ -291,15 +353,14 @@ public class ScrollBarView extends View {
         bringToFront();
     }
     private int getXOffset(Date date){
-        long offsetSec = date.getTime() - mCurrentDate.getTime() + mScaleSec>>1;
-        if(offsetSec < 0) {
+        long offsetSec = date.getTime() - mCurrentDate.getTime() + (mScaleMillisec >> 1);
+        if(offsetSec <= 0) {
             return 0;
-        } else {
-            if (offsetSec > mScaleSec) {
-                return mViewX;
-            }
         }
-        return (int)( (mViewX * offsetSec) / mScaleSec );
+        if (offsetSec >= mScaleMillisec) {
+            return mViewX;
+        }
+        return (int)( (mViewX * offsetSec) / mScaleMillisec);
     }
 
     /**
@@ -310,7 +371,7 @@ public class ScrollBarView extends View {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             mIsScrolling = true;
 
-            mCurrentDate.setTime(mCurrentDate.getTime() + (long) distanceX * (mScaleSec >> 8));
+            mCurrentDate.setTime(mCurrentDate.getTime() + (long) distanceX * (mScaleMillisec >> 8));
             /*
             if(mListener != null) {
                 mListener.onScroll(mCurrentDate);
@@ -332,7 +393,7 @@ public class ScrollBarView extends View {
             // Don't let the object get too small or too large.
             mScaleFactor = Math.max(MIN_SCALE_FACTOR, Math.min(MAX_SCALE_FACTOR, mScaleFactor));
 
-            mScaleSec = (int)(DEFAULT_SCALE_SEC * mScaleFactor);
+            mScaleMillisec = (int)(DEFAULT_SCALE_SEC * mScaleFactor);
 
             scrollBarView.invalidate();
 
@@ -372,7 +433,6 @@ public class ScrollBarView extends View {
                 return;
 
             Log.d("MyApp", "getMotionDetectList replay: " + getArchiveListResponse);
-            getMDEventList();
 
             try {
                 getArchiveListObj = new JSONObject(getArchiveListResponse);
@@ -392,6 +452,7 @@ public class ScrollBarView extends View {
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }
+            getMDEventList();
         }
     }
     /**
@@ -405,10 +466,10 @@ public class ScrollBarView extends View {
         rp.setParam( "startTime", mMysqlDateFormat.format(mObservationStart) );
         rp.setParam( "endTime", mMysqlDateFormat.format(mObservationEnd) );
         rp.setParam( "md_period", Integer.toString(15) );
-        getMDEventListAsyncTask task = new getMDEventListAsyncTask();
+        GetMDEventListAsyncTask task = new GetMDEventListAsyncTask();
         task.execute(rp);
     }
-    private class getMDEventListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+    private class GetMDEventListAsyncTask extends AsyncTask<RequestPackage, Void, String> {
         @Override
         protected String doInBackground(RequestPackage... params) {
             return HTTPManager.getData(params[0]);
@@ -421,7 +482,7 @@ public class ScrollBarView extends View {
             if (s == null)
                 return;
 
-            Log.d("MyApp", "getMDEventListAsyncTask replay: " + s);
+            Log.d("MyApp", "GetMDEventListAsyncTask replay: " + s);
 
             try {
                 jsonArray = new JSONArray(s);
@@ -436,6 +497,7 @@ public class ScrollBarView extends View {
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }
+            invalidate();
         }
     }
 }
