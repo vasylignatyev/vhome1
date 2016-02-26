@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by vignatyev on 22.02.2016.
  */
-public class Event {
+public class Segment {
     public Date eventStart;
     public Date eventStop;
 }

@@ -22,6 +22,7 @@ public class MotionDetectActivity extends FragmentActivity {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 MotionDetectFragment motionDetectFragment = new MotionDetectFragment();
                 motionDetectFragment.setArguments(args);
+                //motionDetectFragment.setArguments(extras);
                 fragmentManager.beginTransaction().replace(R.id.fragment_md, motionDetectFragment).commit();
             }
         }

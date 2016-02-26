@@ -2,6 +2,7 @@ package ua.kiev.vignatyev.vhome1;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,12 +13,17 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
 import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
@@ -37,9 +43,12 @@ public class MotionDetectFragment extends Fragment
     private static int loadStep = 10;
     private static final String TAG = "MotionDetectFragment";
     private static ArrayList<MotionDetectNew> mMotionDetectList = null;
+
+    private static final SimpleDateFormat mMysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.ENGLISH);
     /**
      * VARS
      */
+    private Context mContext;
     private String mUserToken;
     private int mICustomerVcam;
     private int mOffset;
@@ -58,6 +67,7 @@ public class MotionDetectFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         pd = new ProgressDialog(getActivity());
         pd.setTitle("Подключение к серверу");
         pd.setMessage("Ожидайте");
@@ -228,7 +238,35 @@ public class MotionDetectFragment extends Fragment
         protected void onPostExecute(String s) {
             if(s == null)
                 return;
-            Log.d("MyApp", "genMotionDetectPopup replay" + ": " + s);
-         }
+            Log.d("MyApp", "genMotionDetectPopup replay: " + s);
+
+            JSONObject obj, text;
+            int iMotionDetect;
+            String camToken,eventDate;
+
+            try {
+                obj = new JSONObject(s);
+                if(obj.has("error")) {
+                    Toast.makeText(mContext, "Видео доступно только из приложения", Toast.LENGTH_LONG).show();
+                }
+                if(obj.has("text")){
+                    text = obj.getJSONObject("text");
+                    iMotionDetect = text.getInt("I_MOTION_DETECT");
+                    eventDate = text.getString("EVENT_DATE");
+                    camToken = text.getString("CAM_TOKEN");
+
+                    Intent intent = new Intent(mContext, VarchPlayerActivity.class);
+                    intent.putExtra(ScrollBarFragment.ARG_I_MOTION_DETECT, iMotionDetect);
+                    intent.putExtra(ScrollBarFragment.ARG_ISSUE_DATE, eventDate);
+                    intent.putExtra(ScrollBarFragment.ARG_USER_TOKEN, mUserToken);
+                    intent.putExtra(ScrollBarFragment.ARG_VCAM_TOKEN, camToken);
+                    mContext.startActivity(intent);
+
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

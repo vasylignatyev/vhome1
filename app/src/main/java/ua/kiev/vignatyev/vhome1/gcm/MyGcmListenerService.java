@@ -33,34 +33,13 @@ public class MyGcmListenerService extends GcmListenerService {
         String vcamLocation = data.getString("vcam_location",null);
         String vcamName = data.getString("vcam_name",null);
 
-        //Log.d("MyApp", "From: " + from);
-       // Log.d("MyApp", "Message: " + message);
-        //if(null != motionDate) Log.d("MyApp", "motionDate: " + motionDate);
-       // if(null != vcamLocation) Log.d("MyApp", "vcamLocation: " + vcamLocation);
-        //if(null != vcamName) Log.d("MyApp", "vcamName: " + vcamName);
-
-
         if (from.startsWith("/topics/")) {
             // message received from some topic.
         } else {
             // normal downstream message.
         }
 
-
-        // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
-
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
         sendNotification(message, data);
-        // [END_EXCLUDE]
     }
     // [END receive_message]
 
@@ -82,7 +61,6 @@ public class MyGcmListenerService extends GcmListenerService {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(iCustomerVcam), intent,
             PendingIntent.FLAG_UPDATE_CURRENT);
-            //PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)

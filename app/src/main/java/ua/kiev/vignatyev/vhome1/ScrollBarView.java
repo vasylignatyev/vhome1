@@ -17,20 +17,17 @@ import android.view.View;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
 import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
-import ua.kiev.vignatyev.vhome1.models.Event;
+import ua.kiev.vignatyev.vhome1.models.Segment;
 
 
 public class ScrollBarView extends View {
@@ -53,8 +50,8 @@ public class ScrollBarView extends View {
     private ScrollBarView scrollBarView = this;
 
     /* Motion Detect Array */
-    private Map<Date,Integer> mArchiveMap = new LinkedHashMap<Date, Integer>();
-    private List<Event> mMDList = new LinkedList<Event>();
+    private List<Segment> mArchiveMap = new LinkedList<Segment>();
+    private List<Segment> mMDList = new LinkedList<Segment>();
 
     /** scale length in milliseconds*/
     private long mScaleMillisec;
@@ -71,11 +68,10 @@ public class ScrollBarView extends View {
     private ScrollBarViewInterface mListener = null;
 
     /**      */
-    private Date mCurrentDate = new Date();
-    private Date mObservationEnd  = mCurrentDate;
-    private Date mObservationStart = new Date(mObservationEnd.getTime() - OBSERVATION_PERIOD_DURATION);
+    private final Date mCurrentDate = new Date();
+    private final Date mObservationEnd  = new Date(mCurrentDate.getTime());
+    private final Date mObservationStart = new Date(mObservationEnd.getTime() - OBSERVATION_PERIOD_DURATION);
 
-    CountDownTimer mCountDownTimer;
     /**
      * GETTERS AND SETTERS
      */
@@ -85,6 +81,7 @@ public class ScrollBarView extends View {
 
     public void setCurrentDate(long currentDate) {
         this.mCurrentDate.setTime(currentDate);
+        Log.d("MyApp", "setCurrentDate -------------->" + mCurrentDate);
     }
 
     /**
@@ -104,7 +101,6 @@ public class ScrollBarView extends View {
     }
 
     protected void init (Context context) {
-        mCurrentDate = new Date();
         /** period of observation initialization */
 
         mScaleMillisec = (long)(DEFAULT_SCALE_SEC * mScaleFactor); // milliseconds
@@ -132,19 +128,19 @@ public class ScrollBarView extends View {
         archivePaint.setStrokeWidth(0);
 
         mdPaint = new Paint();
-        mdPaint.setStrokeWidth(1);
+        mdPaint.setStrokeWidth(0);
         mdPaint.setColor(Color.YELLOW);
 
 
         backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.BLUE);
+        backgroundPaint.setColor(Color.rgb(128, 128, 128));
         backgroundPaint.setStrokeWidth(0);
 
 
         mGestureDetector = new GestureDetectorCompat( context, new GestureListener());
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
-        mCountDownTimer = new CountDownTimer( 5000, 1000) {
+        new CountDownTimer( 5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
 
@@ -183,8 +179,6 @@ public class ScrollBarView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if(mArchiveMap == null)
-            return;
         //*** Draw video archive fragments
         int prevX = 0;
         int currX;
@@ -193,59 +187,63 @@ public class ScrollBarView extends View {
         int baseLine  = mViewY >> 1;
 
         canvas.drawRect(0, 0, mViewX, mViewY, backgroundPaint);
-
-        for( Map.Entry<Date, Integer> md : mArchiveMap.entrySet()){
-            currX = getXOffset(md.getKey());
-            if(currX != 0 ){
-                if( md.getValue() == MD_START ) {
-                    prevX = currX;
-                } else {
-                    canvas.drawRect(prevX, 0, currX, mViewY, archivePaint);
-                }
-            }
-        }
-        //*** Draw motion detects
-        if(mMDList != null ) {
+        //*** Draw archive
+        if(mArchiveMap != null ) {
             int x1, x2;
-            for (Event mdEvent : mMDList) {
-                x1 = getXOffset(mdEvent.eventStart);
-                if( (x1 <= 0) ) {
-                    continue;
-                }
-                if(mdEvent.eventStart.getTime() == mdEvent.eventStop.getTime()) {
-                    canvas.drawLine( x1, 0 , x1, mViewY,mdPaint);
-                    continue;
-                }
-                x2 = getXOffset(mdEvent.eventStop);
-                if(x2 >= mViewX) {
+            for (Segment segment : mArchiveMap) {
+                x1 = getXOffset(segment.eventStart);
+                x2 = getXOffset(segment.eventStop);
+                if((x1  <= 0) & (x2 <= 0) | ((x1  >= mViewX)&(x2 >= mViewX))) {
                     continue;
                 }
                 if(x1 == x2) {
                     x2 = x2 + 1;
                 }
-                //canvas.drawRect(x1, 0, x2, mViewY, mdPaint);
+                canvas.drawRect(x1, 0, x2, mViewY, archivePaint);
+            }
+        }
+        //*** Draw motion detects
+        if( (mListener != null) & (mListener.showMotionDetect())) {
+            if (mMDList != null) {
+                int x1, x2;
+                for (Segment segment : mMDList) {
+                    x1 = getXOffset(segment.eventStart);
+                    if ((x1 <= 0)) {
+                        continue;
+                    }
+                    if (segment.eventStart.getTime() == segment.eventStop.getTime()) {
+                        canvas.drawLine(x1, 0, x1, mViewY, mdPaint);
+                        continue;
+                    }
+                    x2 = getXOffset(segment.eventStop);
+                    if (x2 >= mViewX) {
+                        continue;
+                    }
+                    if (x1 == x2) {
+                        x2 = x2 + 1;
+                    }
+                    canvas.drawRect(x1, 0, x2, mViewY, mdPaint);
+                }
             }
         }
         //************** CURSOR
 
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
+
         path.moveTo(halfScale, sursorSize);
         path.lineTo(halfScale - sursorSize, 0);
         path.lineTo(halfScale + sursorSize, 0);
         path.lineTo(halfScale, sursorSize);
 
-        path.lineTo(halfScale, mViewY - sursorSize);
+        path.moveTo(halfScale, mViewY - sursorSize);
         path.lineTo(halfScale - sursorSize, mViewY);
         path.lineTo(halfScale + sursorSize, mViewY);
         path.lineTo(halfScale, mViewY - sursorSize);
 
-        path.lineTo(halfScale, 0);
-
         path.close();
         canvas.drawPath(path, cursorPaint);
 
-        canvas.drawLine(mViewX >> 1, 0, mViewX >> 1, mViewY, cursorPaint);
 
         //******************** Date
         canvas.drawText(mDateFormat.format(mCurrentDate), (mViewX >> 1) + 5, 28, fontPaint);
@@ -292,6 +290,7 @@ public class ScrollBarView extends View {
 
         this.mGestureDetector.onTouchEvent(event);
         this.mScaleDetector.onTouchEvent(event);
+
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
             if(mListener != null) {
                 mListener.onChange();
@@ -301,18 +300,26 @@ public class ScrollBarView extends View {
         if( event.getAction() == MotionEvent.ACTION_UP){
             if(mIsScrolling) {
                 mIsScrolling = false;
-                onScrollEvent();
+                onScrollFinishedEvent();
             }
         }
         return true;
     }
-    private void onScrollEvent() {
-        getNextMD();
+
+    /**
+     * Scroll is finished
+     */
+    private void onScrollFinishedEvent() {
+        if(mListener.showMotionDetect()) {
+            getNextMD();
+        } else {
+            mListener.onScroll( mCurrentDate, null);
+        }
     }
 
     public void getNextMD(){
         Log.d("MyApp", "--------------> getNextMD");
-        for( Event ev : mMDList ) {
+        for( Segment ev : mMDList ) {
             if (ev.eventStart.getTime() > mCurrentDate.getTime()) {
                 setCurrentDate(ev.eventStart);
                 if(mListener != null) {
@@ -340,15 +347,13 @@ public class ScrollBarView extends View {
      * FUNCTIONS
      */
     public void setCurrentDate(Date date){
-        mCurrentDate = date;
+        mCurrentDate.setTime(date.getTime());
         invalidate();
     }
     public void slideDown() {
         //animate().translationY(mViewY);
     }
     public void slideUp() {
-        mCountDownTimer.cancel();
-        mCountDownTimer.start();
         //animate().translationY(0);
         bringToFront();
     }
@@ -372,11 +377,7 @@ public class ScrollBarView extends View {
             mIsScrolling = true;
 
             mCurrentDate.setTime(mCurrentDate.getTime() + (long) distanceX * (mScaleMillisec >> 8));
-            /*
-            if(mListener != null) {
-                mListener.onScroll(mCurrentDate);
-            }
-            */
+
             scrollBarView.invalidate();
 
             return super.onScroll(e1, e2, distanceX, distanceY);
@@ -402,8 +403,9 @@ public class ScrollBarView extends View {
     }
 
     interface ScrollBarViewInterface {
-        void onScroll( Date satrt, Date stop );
+        void onScroll( Date start, Date stop );
         void onChange();
+        Boolean showMotionDetect();
     }
     /**
      * REST Request for getArchiveList
@@ -425,30 +427,25 @@ public class ScrollBarView extends View {
             return HTTPManager.getData(params[0]);
         }
         @Override
-        protected void onPostExecute(String getArchiveListResponse) {
-            JSONObject getArchiveListObj, obj;
-            JSONArray archiveList;
+        protected void onPostExecute(String s) {
+            JSONArray jsonArray, mdJson;
 
-            if (getArchiveListResponse == null)
+            if (s == null)
                 return;
 
-            Log.d("MyApp", "getMotionDetectList replay: " + getArchiveListResponse);
+            Log.d("MyApp", "getMotionDetectList replay: " + s);
 
             try {
-                getArchiveListObj = new JSONObject(getArchiveListResponse);
-                if(getArchiveListObj.has("archive_list")) {
-                    archiveList = getArchiveListObj.getJSONArray("archive_list");
-                    for (int i = 0; i < archiveList.length(); i++) {
-                        obj = archiveList.getJSONObject(i);
-
-                        if (obj.has("START_TIME")) {
-                            mArchiveMap.put(mMysqlDateFormat.parse(obj.getString("START_TIME")), MD_START);
-                        }
-                        if (obj.has("END_TIME")) {
-                            mArchiveMap.put(mMysqlDateFormat.parse(obj.getString("END_TIME")), MD_END);
-                        }
-                    }
+                jsonArray = new JSONArray(s);
+                Log.d("MyApp", "Archive amount = " + jsonArray.length() );
+                for( int i = 0 ; i < jsonArray.length() ; i++) {
+                    mdJson = jsonArray.getJSONArray(i);
+                    Segment segment = new Segment();
+                    segment.eventStart = mMysqlDateFormat.parse(mdJson.getString(0));
+                    segment.eventStop  = mMysqlDateFormat.parse(mdJson.getString(1));
+                    mArchiveMap.add(segment);
                 }
+
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }
@@ -465,7 +462,7 @@ public class ScrollBarView extends View {
         rp.setParam( "iCustomerVcam", Integer.toString(mICustomerVcam));
         rp.setParam( "startTime", mMysqlDateFormat.format(mObservationStart) );
         rp.setParam( "endTime", mMysqlDateFormat.format(mObservationEnd) );
-        rp.setParam( "md_period", Integer.toString(15) );
+        rp.setParam( "md_period", Integer.toString(30) );
         GetMDEventListAsyncTask task = new GetMDEventListAsyncTask();
         task.execute(rp);
     }
@@ -476,7 +473,6 @@ public class ScrollBarView extends View {
         }
         @Override
         protected void onPostExecute(String s) {
-            JSONObject getMDEventListObj, obj;
             JSONArray jsonArray, mdJson;
 
             if (s == null)
@@ -489,10 +485,10 @@ public class ScrollBarView extends View {
                 Log.d("MyApp", "MD amount = " + jsonArray.length() );
                 for( int i = 0 ; i < jsonArray.length() ; i++) {
                     mdJson = jsonArray.getJSONArray(i);
-                    Event event = new Event();
-                    event.eventStart = mMysqlDateFormat.parse(mdJson.getString(0));
-                    event.eventStop  = mMysqlDateFormat.parse(mdJson.getString(1));
-                    mMDList.add(event);
+                    Segment segment = new Segment();
+                    segment.eventStart = mMysqlDateFormat.parse(mdJson.getString(0));
+                    segment.eventStop  = mMysqlDateFormat.parse(mdJson.getString(1));
+                    mMDList.add(segment);
                 }
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();

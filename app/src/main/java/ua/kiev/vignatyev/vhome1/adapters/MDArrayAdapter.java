@@ -67,7 +67,6 @@ public class MDArrayAdapter extends ArrayAdapter<MotionDetectNew> {
 
         ViewPager viewPager;
         View view;
-        Log.d("MyApp","MDArrayAdapter::getView: " + position + " " + convertView);
 
         if(convertView !=null){
             viewPager = (ViewPager) convertView.findViewById(R.id.view_pager);
