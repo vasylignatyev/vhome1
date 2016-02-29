@@ -36,8 +36,6 @@ public class ScrollBarView extends View {
     private static final float MIN_SCALE_FACTOR = 0.0625f;
     private static final int DEFAULT_SCALE_SEC = (int) (1.5 * 60 * 60 * 1000); // milliseconds 1.5 hour
     private static final long OBSERVATION_PERIOD_DURATION = 2*24*60*60*1000; //milliseconds 2 days
-    private static final Integer MD_START = 0;
-    private static final Integer MD_END = 1;
     private static final SimpleDateFormat format = new SimpleDateFormat("k");
     private static final SimpleDateFormat mDateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
     private static final SimpleDateFormat mMysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -45,7 +43,7 @@ public class ScrollBarView extends View {
     private int mViewX, mViewY;
 
     private Paint cursorPaint, fontPaint, archivePaint, mdPaint, backgroundPaint, scalePaint;
-    private static final int sursorSize = 16;
+    private static final int cursorSize = 16;
 
     private ScrollBarView scrollBarView = this;
 
@@ -55,8 +53,6 @@ public class ScrollBarView extends View {
 
     /** scale length in milliseconds*/
     private long mScaleMillisec;
-
-    private int mICustomerVcam = 143;
 
     private float mScaleFactor = 1.f;
 
@@ -78,10 +74,12 @@ public class ScrollBarView extends View {
     public Date getCurrentDate() {
         return mCurrentDate;
     }
-
+    public void setCurrentDate(Date date){
+        setCurrentDate(date.getTime());
+    }
     public void setCurrentDate(long currentDate) {
-        this.mCurrentDate.setTime(currentDate);
-        Log.d("MyApp", "setCurrentDate -------------->" + mCurrentDate);
+        mCurrentDate.setTime(currentDate);
+        invalidate();
     }
 
     /**
@@ -164,7 +162,7 @@ public class ScrollBarView extends View {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        getArchiveList();
+
     }
 
     @Override
@@ -231,15 +229,15 @@ public class ScrollBarView extends View {
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
 
-        path.moveTo(halfScale, sursorSize);
-        path.lineTo(halfScale - sursorSize, 0);
-        path.lineTo(halfScale + sursorSize, 0);
-        path.lineTo(halfScale, sursorSize);
+        path.moveTo(halfScale, cursorSize);
+        path.lineTo(halfScale - cursorSize, 0);
+        path.lineTo(halfScale + cursorSize, 0);
+        path.lineTo(halfScale, cursorSize);
 
-        path.moveTo(halfScale, mViewY - sursorSize);
-        path.lineTo(halfScale - sursorSize, mViewY);
-        path.lineTo(halfScale + sursorSize, mViewY);
-        path.lineTo(halfScale, mViewY - sursorSize);
+        path.moveTo(halfScale, mViewY - cursorSize);
+        path.lineTo(halfScale - cursorSize, mViewY);
+        path.lineTo(halfScale + cursorSize, mViewY);
+        path.lineTo(halfScale, mViewY - cursorSize);
 
         path.close();
         canvas.drawPath(path, cursorPaint);
@@ -310,25 +308,24 @@ public class ScrollBarView extends View {
      * Scroll is finished
      */
     private void onScrollFinishedEvent() {
+        Date stopPosition = null;
+
         if(mListener.showMotionDetect()) {
-            getNextMD();
-        } else {
-            mListener.onScroll( mCurrentDate, null);
+            stopPosition = getNextMD();
         }
+        mListener.startPlay(stopPosition);
     }
 
-    public void getNextMD(){
+    public Date getNextMD(){
         Log.d("MyApp", "--------------> getNextMD");
         for( Segment ev : mMDList ) {
             if (ev.eventStart.getTime() > mCurrentDate.getTime()) {
                 setCurrentDate(ev.eventStart);
-                if(mListener != null) {
-                    mListener.onScroll( ev.eventStart, ev.eventStop );
-                    Log.d("MyApp", "eventStart->" + ev.eventStart + "  eventStart->" + ev.eventStop);
-                }
-                break;
+                Log.d("MyApp", "eventStart->" + ev.eventStart + "  eventStart->" + ev.eventStop);
+                return ev.eventStop;
             }
         }
+        return null;
     }
 
     /**
@@ -337,19 +334,13 @@ public class ScrollBarView extends View {
     public void setScrollListener(Object v){
         try {
             mListener = (ScrollBarViewInterface) v;
+            getArchiveList();
         } catch (ClassCastException e) {
             throw new ClassCastException(v.toString()
                     + " must implement ScrollBarViewInterface");
         }
     }
 
-    /**
-     * FUNCTIONS
-     */
-    public void setCurrentDate(Date date){
-        mCurrentDate.setTime(date.getTime());
-        invalidate();
-    }
     public void slideDown() {
         //animate().translationY(mViewY);
     }
@@ -376,7 +367,7 @@ public class ScrollBarView extends View {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             mIsScrolling = true;
 
-            mCurrentDate.setTime(mCurrentDate.getTime() + (long) distanceX * (mScaleMillisec >> 8));
+            setCurrentDate(mCurrentDate.getTime() + (long) distanceX * (mScaleMillisec >> 8));
 
             scrollBarView.invalidate();
 
@@ -403,9 +394,10 @@ public class ScrollBarView extends View {
     }
 
     interface ScrollBarViewInterface {
-        void onScroll( Date start, Date stop );
+        void startPlay(Date stop);
         void onChange();
         Boolean showMotionDetect();
+        String getVcamToken();
     }
     /**
      * REST Request for getArchiveList
@@ -414,7 +406,8 @@ public class ScrollBarView extends View {
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam( "functionName", "getArchiveList");
-        rp.setParam( "iCustomerVcam", Integer.toString(mICustomerVcam));
+        //rp.setParam( "iCustomerVcam", Integer.toString(VarchPlayerFragment.getICustomerVcam()));
+        rp.setParam( "vcam_token", mListener.getVcamToken());
         rp.setParam( "startTime", mMysqlDateFormat.format(mObservationStart) );
         rp.setParam( "endTime", mMysqlDateFormat.format(mObservationEnd) );
         rp.setParam( "scaleDivision", Integer.toString(0));
@@ -459,7 +452,8 @@ public class ScrollBarView extends View {
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
         rp.setMethod("GET");
         rp.setParam("functionName", "getMDEventList");
-        rp.setParam( "iCustomerVcam", Integer.toString(mICustomerVcam));
+        //rp.setParam( "iCustomerVcam", Integer.toString(VarchPlayerFragment.getICustomerVcam()));
+        rp.setParam( "vcam_token", mListener.getVcamToken());
         rp.setParam( "startTime", mMysqlDateFormat.format(mObservationStart) );
         rp.setParam( "endTime", mMysqlDateFormat.format(mObservationEnd) );
         rp.setParam( "md_period", Integer.toString(30) );

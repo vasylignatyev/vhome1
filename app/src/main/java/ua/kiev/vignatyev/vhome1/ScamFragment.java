@@ -1,7 +1,7 @@
 package ua.kiev.vignatyev.vhome1;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,11 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import ua.kiev.vignatyev.vhome1.adapters.VcamArrayAdapter;
 import ua.kiev.vignatyev.vhome1.ajax.HTTPManager;
 import ua.kiev.vignatyev.vhome1.ajax.RequestPackage;
+import ua.kiev.vignatyev.vhome1.models.Vcam;
 import ua.kiev.vignatyev.vhome1.parsers.VcamParser;
 
 public class ScamFragment extends Fragment implements AbsListView.OnItemClickListener, VcamArrayAdapter.OnAdapterInteractionListener {
@@ -29,11 +32,10 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
     /**
      * VARS
      */
-    private VcamArrayAdapter vcamArrayAdapter;
-    private MainActivity mMainActivity;
     private ProgressDialog pd;
     private String mUserToken;
     private AbsListView mListView;
+    private String mStreamURL;
 
     /**
      *
@@ -42,7 +44,6 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
     }
 
     /**
-     *
      * @param userToken
      * @return
      */
@@ -55,23 +56,16 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
     }
 
     /**
-     *
-     * @param activity
+     * LIFE CICLE
      */
     @Override
-    public void onAttach(Activity activity) {
-        pd = new ProgressDialog(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        pd = new ProgressDialog(context);
         pd.setTitle("Подключение к серверу");
         pd.setMessage("Ожидайте");
-        mMainActivity = (MainActivity) activity;
+    }
 
-        super.onAttach(activity);
-     }
-
-    /**
-     *
-     * @param savedInstanceState
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,13 +75,6 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
         }
     }
 
-    /**
-     *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -99,94 +86,54 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
         return view;
     }
 
-    /**
-     *
-     * @param savedInstanceState
-     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(MainActivity.isScamListEmpty()) {
-            getSharedVCamList();
-        } else {
-            updateDisplay();
-        }
+        getSharedVCamList();
     }
 
     /**
-     *
+     * SERVICE FUNCTION
      */
-    public void updateDisplay(){
-        vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getScamList());
-        //**********************
-        // Set the listener
+    public void updateDisplay() {
+        VcamArrayAdapter vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getScamList());
         vcamArrayAdapter.setOnAdapterInteractionListener(this);
-        //**********************
-        // Set the adapter
-        if(null != vcamArrayAdapter) {
+        if (null != vcamArrayAdapter) {
             mListView.setAdapter(vcamArrayAdapter);
         }
         pd.hide();
     }
 
     /**
-     *
-     * @param parent
-     * @param view
-     * @param position
-     * @param id
+     * IMPLEMENTED
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //set arguments
-        Log.d("MyApp","VIEW Tag: " +  view.getTag().toString());
-        String steamURL = MainActivity.getScam(Integer.parseInt(view.getTag().toString())).getVcamURL();
-        Log.d("MyApp", steamURL);
-        Fragment newFragment = VcamPlayerFragment.newInstance(steamURL);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        transaction.replace(R.id.container, newFragment, VcamPlayerFragment.TAG);
-        transaction.addToBackStack(null);
-        transaction.commit();
-        fragmentManager.executePendingTransactions();
+        Vcam vcam = MainActivity.getScam(Integer.parseInt(view.getTag().toString()));
+        mStreamURL = vcam.getVcamURL();
+        getHashString(vcam.getTOKEN());
     }
 
-    /**
-     *
-     * @param emptyText
-     */
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = mListView.getEmptyView();
-
-        if (emptyView instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
-        }
-    }
-
-    /**
-     *
-     * @param v
-     */
+    //video Archive Button Click
     @Override
     public void onArchButtonClick(View v) {
-        Log.d("myApp", "Archive vcam token: " + v.getTag());
-
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        Fragment newFragment = VarchFragment.newInstance(mUserToken, v.getTag().toString());
+        Fragment newFragment = VarchPlayerFragment.newInstance(mUserToken, v.getTag().toString());
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        transaction.replace(R.id.container, newFragment, ScamFragment.TAG);
+        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
+        transaction.replace(R.id.container, newFragment);
         transaction.addToBackStack(TAG);
         transaction.commit();
         fragmentManager.executePendingTransactions();
     }
 
     /**
-     * REST Request for Vcam List
+     * REST Request for Shared Vcam List
      */
     public void getSharedVCamList() {
+
         pd.show();
         //************************
         RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "php/ajax.php");
@@ -197,6 +144,7 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
         GetSharedVCamListAsyncTask task = new GetSharedVCamListAsyncTask();
         task.execute(rp);
     }
+
     /**
      * Async taskfor Vcam List
      */
@@ -206,10 +154,59 @@ public class ScamFragment extends Fragment implements AbsListView.OnItemClickLis
             String replay = HTTPManager.getData(params[0]);
             return replay;
         }
+
         @Override
         protected void onPostExecute(String s) {
             MainActivity.setScamList(VcamParser.parseFeed(s));
             updateDisplay();
+        }
+    }
+
+    /**
+     * REST Request for Hash String
+     */
+    public void getHashString(String camToken) {
+        RequestPackage rp = new RequestPackage(MainActivity.SERVER_URL + "ajax/ajax.php");
+        rp.setMethod("GET");
+        rp.setParam("functionName", "get_hash_string");
+        rp.setParam("token", mUserToken);
+        rp.setParam("cam_token", camToken);
+
+        getHashStringAsyncTask task = new getHashStringAsyncTask();
+        task.execute(rp);
+    }
+
+    public class getHashStringAsyncTask extends AsyncTask<RequestPackage, Void, String> {
+        @Override
+        protected String doInBackground(RequestPackage... params) {
+            return HTTPManager.getData(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d("MyApp", "getHashString:" + s);
+
+            JSONObject obj;
+            String hash_string;
+            try {
+                obj = new JSONObject(s);
+                if (obj.has("hash_string")) {
+                    hash_string = obj.getString("hash_string");
+                    mStreamURL += "?" + hash_string;
+                }
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+                Fragment newFragment = VcamPlayerFragment.newInstance(mStreamURL);
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
+                transaction.replace(R.id.container, newFragment, VcamPlayerFragment.TAG);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                fragmentManager.executePendingTransactions();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

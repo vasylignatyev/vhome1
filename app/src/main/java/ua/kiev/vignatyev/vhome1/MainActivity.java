@@ -40,7 +40,7 @@ import ua.kiev.vignatyev.vhome1.models.Vcam;
 
 public class MainActivity extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-            VarchPlayerFragment.OnVarchPlayerInteractionListener, LoginFragment.OnLoginFragmentInteractionListener {
+            LoginFragment.OnLoginFragmentInteractionListener {
 
     /**
      * STATIC VARS
@@ -285,10 +285,7 @@ public class MainActivity extends FragmentActivity
         // Do stuff here.
         Log.i("MyApp", "Negative click!");
     }
-        @Override
-    public void getNextVarchPart(Varch varch) {
 
-    }
     @Override
     public void loggedIn(String user_token, String user_name, String user_pass) {
         mUserToken = user_token;

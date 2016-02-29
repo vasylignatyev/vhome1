@@ -30,6 +30,9 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     private static final String USER_TOKEN = "user_token";
     private static final String TAG = "VcamFragment";
+    /**
+     * VARS
+     */
     private ProgressDialog pd;
     private String mUserToken;
     private ListView mListView;
@@ -90,7 +93,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     /**
      * SERVICE FUNCTION
      */
-
     public void updateDisplay(){
         VcamArrayAdapter vcamArrayAdapter = new VcamArrayAdapter(getActivity(), R.layout.item_vcam, MainActivity.getVcamList());
         vcamArrayAdapter.setOnAdapterInteractionListener(this);
@@ -103,7 +105,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     /**
      * IMPLEMENTED
      */
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //set arguments
@@ -114,25 +115,14 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
     //video Archive Button Click
     @Override
     public void onArchButtonClick(View v) {
-        /*
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        Fragment newFragment = VarchFragment.newInstance(mUserToken, v.getTag().toString());
+        Fragment newFragment = VarchPlayerFragment.newInstance(mUserToken, v.getTag().toString());
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
         transaction.replace(R.id.container, newFragment);
         transaction.addToBackStack(TAG);
         transaction.commit();
         fragmentManager.executePendingTransactions();
-        */
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        Fragment newFragment = ScrollBarFragment.newInstance(mUserToken, v.getTag().toString());
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
-        transaction.replace(R.id.container, newFragment);
-        transaction.addToBackStack(TAG);
-        transaction.commit();
-        fragmentManager.executePendingTransactions();
-
     }
 
     /**
@@ -206,7 +196,6 @@ public class VcamFragment extends Fragment implements AbsListView.OnItemClickLis
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
     }
 }

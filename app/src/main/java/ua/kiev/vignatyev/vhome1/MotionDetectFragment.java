@@ -19,10 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 import ua.kiev.vignatyev.vhome1.adapters.MDArrayAdapter;
@@ -106,7 +104,7 @@ public class MotionDetectFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate( R.layout.fragment_motion_detect_list, container, false);
+        View view = inflater.inflate( R.layout.fragment_motion_detect, container, false);
 
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         mListView.setOnItemClickListener(this);
@@ -256,10 +254,10 @@ public class MotionDetectFragment extends Fragment
                     camToken = text.getString("CAM_TOKEN");
 
                     Intent intent = new Intent(mContext, VarchPlayerActivity.class);
-                    intent.putExtra(ScrollBarFragment.ARG_I_MOTION_DETECT, iMotionDetect);
-                    intent.putExtra(ScrollBarFragment.ARG_ISSUE_DATE, eventDate);
-                    intent.putExtra(ScrollBarFragment.ARG_USER_TOKEN, mUserToken);
-                    intent.putExtra(ScrollBarFragment.ARG_VCAM_TOKEN, camToken);
+                    intent.putExtra(VarchPlayerFragment.ARG_I_MOTION_DETECT, iMotionDetect);
+                    intent.putExtra(VarchPlayerFragment.ARG_ISSUE_DATE, eventDate);
+                    intent.putExtra(VarchPlayerFragment.ARG_USER_TOKEN, mUserToken);
+                    intent.putExtra(VarchPlayerFragment.ARG_VCAM_TOKEN, camToken);
                     mContext.startActivity(intent);
 
 
